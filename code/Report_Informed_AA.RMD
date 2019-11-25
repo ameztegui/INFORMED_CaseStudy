@@ -1,0 +1,1061 @@
+---
+title: "Report_Informed"
+author: "CTFC"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r "setup", echo =F}
+rm(list=ls())
+
+knitr::opts_knit$set(root.dir = "D:/Aitor/INFORMED_CaseStudy")
+knitr::opts_chunk$set(echo =F)
+
+```
+
+
+
+```{r libraries, message=F, warning=F, include =FALSE}
+
+# library(gridExtra)
+library(tidyverse)
+library(medfate)
+library(meteoland)
+library(raster)
+library(patchwork)
+# library(rgeos)
+# library(rgdal)
+# library(maptools)
+# library(ggradar)
+# library(fmsb) # for radar chart
+# library(ggthemes)
+library(GGally)
+library(zoo)
+
+
+# load("./Rdata/SortieOutput/raw_data_CD.Rdata")
+load("./data/data_plot.Rdata")
+load("./data/data_plot_species.Rdata")
+load("./data/annual_climate.Rdata")
+
+load("./data/pn.rdata")
+load("./data/ps.rdata")
+load("./data/mx.rdata")
+
+all_forest_list <-  c(pn_forestlist, ps_forestlist, mx_forestlist)
+all_forest_list <- all_forest_list[order(names(all_forest_list))]
+
+management_colors <- c("#5F978E","#5B4887", "#9B2F5D", "#E7BC66" )
+rcp_colors <- c("#0072B2", "#D55E00")
+species_colors <- c("#0072B2","#E69F00","#A14063" )
+okabe_ito <- c( "#D55E00", "#009E73","#E69F00", "#56B4E9", "#F0E442", "#0072B2", "#CC79A7","#999999")
+
+newtheme <- theme_minimal() +
+    theme(legend.position = "bottom",
+          strip.text = element_text(size = 12, face = "italic"),
+          axis.title = element_text(size = 12, face = "bold"),
+          legend.text = element_text(size = 11),
+          legend.title = element_text(size = 12, face = "bold"),
+          panel.spacing.x = unit(5, "mm"),
+          panel.grid.minor = element_blank())
+
+ 
+```
+# 1 Introduction
+The rapid changes that global change is imposing on natural systems have set off the scientific and societal interest in forecasting the impacts of current and future socio-economic development for both ecosystems and human-wellbeing. The Intergovernmental Platform on Biodiversity and Ecosystem Services has identified the use of ecological modelling in combination with scenario forecasting as fundamental pillars to advance in the understanding of such impacts, through the evaluation of the relationships and feedbacks between direct and indirect drivers of change, biodiversity, nature benefits to people and good quality of life. (copiado del articulo de review de ES de Ale)
+
+the recently established Intergovernmental Platform on Biodiversity and Ecosystem Services (IPBES) has developed a first working program that identifies the use of future scenarios and modelling approaches as fundamental pillars to advance on understanding the relationships and feedbacks between direct and indirect drivers of change, biodiversity, nature benefits to people and good quality of life (IPBES 2016).
+Aims:
+To evaluate the influence of forest management strategies on the future provision of ecosystem services by Mediterranean forests, under a global change context.
+
+
+# 2 Methods
+
+## 2.1 Study area and species
+The study was conducted in the Solsones county, in the central region of Catalonia (northeastern Spain). The Solsones located in the pre-Pyrenees, in the transition zone between the plains of the Ebro valley and the Pyrenean mountains. The altitude ranges between 400 and 2400 m a.s.l., with a clear south-north gradient, and the climate is dry-subhumid to sub-humid Mediterranean, with a mean temperature of 12º C and 650 mm of rainfall. The region, which covers 1000 km2, is sparsely populated, with a density of 13 inhabitants per square kilometre that are concentrated mainly in Solsona, the capital, while the rest of the territory is unoccupied. The region is covered in 62% of forests, whereas approximately 25% of the territory is devoted to farmlands.
+
+For this study, we decided to evaluate the dynamics of the three main forest types in the area: black pine (*Pinus nigra*) dominates in 19700 hectares; Scots pine (*Pinus sylvestris*) pure stands occupy 10600 hectares, whereas mixed forests of both pines occupy 7950 hectares. Together, these three forest communities account for two thrids of the total forest cover. We defined the initial forest structure and composition of each forest type based on the third Spanish Forest Inventory (IFN3; DGCN, 2005): we selected all the IFN3 plots within Solsonès, and which were dominated by either black pine, Scots pine, or the mixture of both. Based on the relative abundance of each species, we classified the selected 261 plots as pure *Pinus nigra* (146 plots), *Pinus sylvestris* (60 plots) or mixed forest (55 plots).
+
+
+```{r mapa_solsones, eval = FALSE, fig.cap="Figure 1. (a) Location of the Solsones county within Catalonia, and (b) location of the 261 study plots classified according to the dominant species",fig.width = 9,fig.align="center"}
+
+mdt <- raster("./OtherInputs/SOL_MDT.tif")
+slope <- terrain(mdt, opt='slope')
+aspect <- terrain(mdt, opt='aspect')
+hill <- hillShade(slope, aspect, angle=40, direction=270)
+
+par(mfrow= c(1,2),mar = c(0, 0, 1, 4))
+      plot(comarques)
+      plot(cat.contour, col="black", lwd=3, add=TRUE)
+      plot(solsones, col="dark orange", add=TRUE, border="orange")
+      title("A", adj =0)
+
+      plot(hill,
+           col=grey(1:100/100),  # create a color ramp of grey colors for hillshade
+           legend=FALSE,         # no legend, we don't care about the grey of the hillshade
+           axes=FALSE,          # makes for a cleaner plot, if the coordinates aren't necessary
+           box =F)
+      
+      plot(mdt,
+           axes=FALSE,
+           alpha=0.3,   # sets how transparent the object will be (0=transparent, 1=not transparent)
+           add=T,
+           legend.args=list(text='Elevation (m)', side=1, font=2, line=2, cex=0.8),
+           legend.cex = 0.5, horizontal=F)
+      points(pn_sp_wgs84, col = species_colors[1], pch = 20, cex=1.6)
+      points(ps_sp_wgs84, col = species_colors[2], pch = 20, cex= 1.6)
+      points(mx_sp_wgs84, col = species_colors[3], pch = 20, cex= 1.6)
+      legend("bottomleft", legend = c("Pinus nigra", "Pinus sylvestris", "Mixed"),
+             fill = species_colors, bty = "n")
+      title("B", adj =0)
+dev.off()
+
+```
+
+## 2.2 Socioeconomic narratives
+We build a set of XX simulation scenarios that incorporate drivers of landscape change that operate at multiple scales. 
+* Drivers operating at global scales: climate change trends (e.g. RCP 4.5 and RCP 8.5). 
+* Supra-national policies:
+** Business as usual
+** Maximizing biomass carbon (in a context of climate change mitigation)
+** Maximizing wood removal (in a context of promoting renewable energy)
+** Adaptive management
+*Local context: forest management scenarios (ORGEST)
+(probably as a table)
+ 
+
+## 2.3 Climatic data
+
+Daily meteorological series for the 1976-2015 period were obtained for IFN3 plot locations by interpolation from weather station records (AEMET and SMC networks), following the methods of Thornton et al. (1997) and Thornton & Running (1999). Daily weather predictions for the historical period 1976-2005 and a projection period 2006-2100 under RCP 4.5 and RCP 8.5 were obtained from the EU-CORDEX project (Kotlarski et al., 2014), available at the Earth System Grid Federation (ESGF; http://esgf.llnl.gov/). Data for the historical and projection periods corresponded to the predictions of the CNRM-CERFACS-CNRM-CM5 global model regionalized to Europe at 11 km resolution using either CCLM4-8-17 or RCA4 models. We downscaled/corrected daily climate series to the plot scale by using interpolated historical series (1976-2005) as reference. Corrections were applied separately for each of the twelve months. Mean temperature, specific humidity and radiation were corrected using observed biases. Minimum/maximum temperature, precipitation and wind speed were corrected using empirical quantile mapping. Details of the interpolation and bias correction procedures are described in De Cáceres et al. (submitted). Climatic series to be used for subsequent calculations were made of observational (interpolated) data for the 2001-2015 period and (corrected) predictions for the 2016-2100).
+
+
+## 2.4 Management
+
+If we set as one of the main goals of this study to explore the influence of adaptation measures on the provision of the services, we might need to explain in detail here how those management measures fit within each scenario narrative combination.
+ 
+This section deserves a table with the scenario name, scenario narrative, and implications of each scenario for model simulations (i.e. detail how the different simulation parameters change in each scenario, for example the thinning regime, the climate conditions, others?).
+Time horizons considered (2035, 2050, 2100?) or simulations run on an yearly basis from 2016 to 2100.
+
+## 2.5 Simulation of forest dynamics
+
+We simulated forest dynamics for 100 years using SORTIE-ND version 7.05 (http://www.sortie-nd.org) (Canham et al., 2005). SORTIE-ND is a spatially explicit, individual-based model of forest dynamics, in which the growth of every single individual tree is determined each year as a function of 4 factors: its species, its size, the climate (average annual temperature and annual rainfall) and the competition exercised by its neighbours, which in turn is determined by the size and identity of the individual neighbours and their distance from the focal tree (Canham and Uriarte, 2006). The fact that forest dynamics depend on both forest management (defined through competition) and climatic conditions allows SORTIE-ND to perform realistic representations highly applicable under changing environmental conditions (Moran-Ordoñez et al. 2018). Moreover, SORTIE-ND produces annual estimates of stand structure, based on the position, size, growth and mortality of every individual tree in a plot. It is therefore particularly suitable for evaluating the provision of different goods and services that depend on forest characteristics at different spatio-temporal scales.
+
+The parameters needed to simulate forest dynamics were obtained from Gómez-Aparicio et al. (2011) and Ameztegui et al. (2015), who used likelihood methods and the second and third Spanish Forest Inventory as dataset. SORTIE-ND has been succesfully used to simulate the effects of climate change and forest management in the dynamics of pure and mixed conifer forests in the area (Ameztegui et al. 2015, 2017). The combination of the 4 scenario narratives, the 2 climatic global regional models (RCA4 vs. CCLM) and the two climatic scenarios (4.5 vs 8.5) produced 16 experimental conditions, which were applied to each of the 261 forest plots. Each simulation was repeated 10 times to take into account stochastic processes, so the total number of simulations was 41760. Details on the exact formulation used to simulate forest dynamics and the parameter values can be found in Supplementary Material.
+
+
+## 2.6 Ecosystem services
+### 2.6.1 Timber production
+regression models from XX (Ref), using as input the forest structure derived from SORTIE.
+
+
+### 2.6.2 Carbon storage
+regression models from XX (Ref), using as input the forest structure derived from SORTIE.
+
+### 2.6.3 Mushrooms
+Using the equations of De Miguel et al.  with inputs from SORTIE.
+
+### 2.6.4 Regulation of water quantity
+from MEDFATE using the imputs of SORTIE.
+
+### 2.6.5 Prevention of soil erosion
+USLE equation. We followed Guerra et al. 2016 http://www.sciencedirect.com/science/article/pii/S1470160X15003775
+Rm factor from climate scenarios;  Cfactor from MEDFATE and SORTIE
+
+### 2.6.6 Fire risk
+Forest growth (species composition and stand structure)  from SORTIE + Forest condition (water content) from MEDFATE.
+
+
+# 3 Results
+
+# 3.1 Initial forest characteristics
+
+```{r initial_daso_table, warning=FALSE}
+initial_daso_table <- data_plot%>%
+      filter(Timestep==1, Climate_Model == "CCLM") %>%
+      group_by() %>%
+      summarise(meanBA=mean(BA),
+            minBA = min(BA),
+            maxBA = max(BA),
+            meanN=mean(N),
+            minN=min(N),
+            maxN=max(N)) %>%
+      mutate(QMD = sqrt(meanBA/(meanN*0.0000785)))
+
+```
+
+Mean basal area at the beginning of the simulations was `r round(initial_daso_table$meanBA,1)` m2?ha-1, with a mean stem density of `r round(initial_daso_table$meanN,1)` trees?ha-1, which corresponds to a quadratic mean diameter of `r round(initial_daso_table$QMD,1)` cm. There was, however, a high variability in the initial structure of the plots, and basal area values varied between `r round(initial_daso_table$minBA,0)` and `r round(initial_daso_table$maxBA,0)` m2?ha-1, while density ranged between `r round(initial_daso_table$minN,0)` and `r round(initial_daso_table$maxN,0)` stems per hectare. In mixed stands, black pine was slightly more abundant than Scots pine (52.5 vs. 47.5% of the basal area), although the difference was not statistically significant.
+
+
+# 3.2 Climatic data
+
+```{r temp_ini_fin, message=F}
+
+clim_ini <- annual_climate %>%
+      filter(Timestep < 10, Climate_Model == "CCLM") %>%
+      group_by( ) %>%
+      summarise(meanT = mean(temp),
+            meanP = mean(prec))
+
+clim_fin <- annual_climate %>%
+      filter(Timestep > 90, Climate_Model == "CCLM") %>%
+      group_by(  RCP) %>%
+      summarise(meanT = mean(temp),
+            meanP = mean(prec)) 
+
+```
+The average temperature in the study plots at the beginning of the simulations was `r round(clim_ini$meanT,1)`ºC, and the precipitation was `r round(clim_ini$meanP, 1)` mm. At the end of the simulated period, the average temperature had increased to `r round(clim_fin$meanT[clim_fin$RCP =="RCP 4.5"],1)`?C (scenario 4.5) or `r round(clim_fin$meanT[clim_fin$RCP =="RCP 8.5"],1)`?C (scenario 8.5), while precipitation remained at similar average values throughout the whole period, although with large inter-annual fluctuations.
+
+
+```{r clima_ifn_type, fig.cap = "Figure 2. Dynamics of the average annual temperature and rainfall between 2001 and 2100 for the three studied forest types and two climatic scenarios", fig.width = 7,fig.height = 10, fig.align = "center"}
+
+clima_mean <-annual_climate %>%
+  filter(Climate_Model == "CCLM") %>%
+  group_by(Forest_Type, Scen_Clima,Climate_Model, RCP, Timestep) %>%
+  summarise(Temp = mean (temp),
+            sd_Temp = sd(temp),
+            Prec = mean (prec),
+            sd_Prec = sd(prec)) %>%
+  ungroup()
+
+
+mean_temp_plot <- clima_mean%>%
+  ggplot() +
+  geom_ribbon(aes(x= 2001+Timestep, fill= RCP,
+                  ymin=Temp - sd_Temp, ymax = Temp + sd_Temp), 
+              alpha = 0.7, color = NA)+
+  facet_grid(~ Forest_Type)+
+  labs(x = "Year", y = "Mean temperature") +
+  scale_fill_manual(values = rcp_colors)+
+  newtheme
+
+
+mean_prec_plot <- clima_mean%>%
+      ggplot() +
+      geom_ribbon(aes(x= 2001+Timestep,  fill= RCP,
+                      ymin=Prec - sd_Prec, ymax = Prec + sd_Prec), 
+                  alpha = 0.7, color =NA)+
+      facet_grid(  ~ Forest_Type)+
+      labs(x = "Year", y = "Mean precipitation") +
+      scale_fill_manual(values = rcp_colors)+
+      newtheme
+
+mean_temp_plot + theme(legend.position= "n") +
+    mean_prec_plot + plot_layout(ncol = 1)
+
+```
+
+The annual evolution of temperature and precipitation for each of the studied plots between 2001 and 2100 can be found in these files: 
+
+
+* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/temp_ifn_plots/index.html" target="_blank">Temperature</a>
+* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/prec_ifn_plots/index.html" target="_blank">Precipitation</a>
+
+
+## 3.3 Simulated forest structure
+
+```{r structure_forest_type}
+structure_time <- data_plot %>%
+  filter(Climate_Model == "CCLM") %>%
+  mutate(Year = Timestep + 2001,
+         Management = as.factor(Management), 
+         Management = fct_relevel(Management, "BAU","BIO","CAR","ADA"),
+         RCP = fct_recode(RCP,
+                          "RCP 4.5" = "45",
+                          "RCP 8.5" = "85"),
+         Forest_Type = factor(Forest_Type,
+                              levels= c("Pinus nigra", "Pinus sylvestris", "Mixed forest"))) %>%
+  group_by(Forest_Type,  RCP, Management, Narrative, Year) %>%
+  summarise(BA_mean = mean (BA),
+            BA_sd = sd(BA),
+            BA_se = BA_sd/sqrt(n()),
+            N_mean = mean (N),
+            N_sd = sd(N),
+            N_se = N_sd/sqrt(n()),
+            DBH_mean = mean(DBH, na.rm=T),
+            DBH_sd = sd(DBH),
+            DBH_se = DBH_sd/sqrt(n())) %>%
+  ungroup() 
+```
+
+
+```{r BA_forest_type, fig.cap = "Figure 3. Dynamics of (a) basal area and (b) stem density for the three studied forest types as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", fig.height= 12, warning=FALSE}
+      
+BA_plot <- structure_time %>%
+    ggplot(aes(Year, y=zoo:::rollmean(BA_mean, 3, na.pad=TRUE), color = Management)) +
+    geom_ribbon(aes(ymin = zoo::rollmean(BA_mean - BA_sd,3,na.pad=T),
+                    ymax = zoo::rollmean(BA_mean + BA_sd,3,na.pad=T),
+                    fill = Management), alpha=0.2, color =NA) +
+    labs(x = "Year", y = expression(bold(paste('Basal area ('~ m^2~ha^-1,')')))) +
+    facet_grid(RCP ~ Forest_Type) +
+    geom_line(size = 1.5) +
+    xlim(2002, 2098) +
+    scale_color_manual("Scenario",values = management_colors, 
+                       labels = c("Business as usual", "Wood energy",
+                                  "Carbon storage", "Adaptation")) +
+    scale_fill_manual("Scenario", values = management_colors, 
+                      labels = c("Business as usual",  "Wood energy",
+                                 "Carbon storage","Adaptation")) +    
+    newtheme 
+
+N_plot <-  structure_time %>%
+    ggplot(aes(Year, y=zoo:::rollmean(N_mean, 3, na.pad=TRUE), color = Management)) +
+    geom_ribbon(aes(ymin = zoo::rollmean(N_mean - N_sd,3,na.pad=T),
+                    ymax = zoo::rollmean(N_mean + N_sd,3,na.pad=T),
+                    fill = Management), alpha=0.2, color =NA) +
+    labs(x = "Year", y = expression(bold(paste('Stem density')))) +
+    facet_grid(RCP ~ Forest_Type) +
+    geom_line(size = 1.5) +
+    xlim(2002, 2098) +
+    scale_color_manual("Scenario",values = management_colors, 
+                       labels = c("Business as usual", "Wood energy",
+                                  "Carbon storage", "Adaptation")) +
+    scale_fill_manual("Scenario", values = management_colors, 
+                      labels = c("Business as usual",  "Wood energy",
+                                 "Carbon storage","Adaptation")) +    
+    newtheme 
+
+DBH_plot <-  structure_time %>%
+    ggplot(aes(Year, y=zoo:::rollmean(DBH_mean, 3, na.pad=TRUE), color = Management)) +
+    geom_ribbon(aes(ymin = zoo::rollmean(DBH_mean - DBH_sd,3,na.pad=T),
+                    ymax = zoo::rollmean(DBH_mean + DBH_sd,3,na.pad=T),
+                    fill = Management), alpha=0.2, color =NA) +
+    labs(x = "Year", y = expression(bold(paste('Diameter at breast height (cm)')))) +
+    facet_grid(RCP ~ Forest_Type) +
+    geom_line(size = 1.5) +
+    xlim(2002, 2098) +
+    scale_color_manual("Scenario",values = management_colors, 
+                       labels = c("Business as usual", "Wood energy",
+                                  "Carbon storage", "Adaptation")) +
+    scale_fill_manual("Scenario", values = management_colors, 
+                      labels = c("Business as usual",  "Wood energy",
+                                 "Carbon storage","Adaptation")) +    
+    newtheme 
+
+BA_plot +theme(legend.position = "n") + 
+    N_plot + plot_layout(ncol = 1)
+
+
+```
+
+
+The annual evolution of basal area and stem density for each of the studied plots between 2001 and 2100 can be found in these files: 
+
+* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/BA_dynamics_plots/index.html" target="_blank">Basal Area</a>
+* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/N_dynamics_plots/index.html" target="_blank">Stem density</a>
+
+and their equivalents by plot and species here
+
+* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/BA_dynamics_species_plots/index.html" target="_blank">Basal Area per plot and species</a>
+* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/N_dynamics_species_plots/index.html" target="_blank">Stem density per plot and species</a>
+
+## 3.4 Ecosystem services
+
+Plots showing changes in the provision of the 6 services under the different scenarios. See one nice example of spider plot in Figure 2, Mina et al. 2016 JAE . These plots allow the comparison of values between two particular time periods (e.g. change 2100-2016, change 2050-2016). Other option is using regular plots of lines where we show the evolution on the provision of each service over time (since 2016 to 2100) under the different scenarios. I find these plots nicer graphical tools for the identification of trade-offs and synergies between services.
+
+### 3.4.1 Timber Volume
+
+```{r timber species, warning=F}
+load("./data/ES_data/timber_plot.Rdata")
+
+# Firts, we need to calculate each timber & biomass variable for each forest type and scenario
+timber_species <- timber_plot %>%
+  mutate(Year = Timestep + 2001) %>%
+  group_by (Forest_Type, Climate_Model, RCP, Management, Narrative,
+             Recipe, Year) %>%
+  summarise_at(vars(TotalV_Alive:C_Inc),c(mean="mean", sd="sd"), na.rm = T) %>%
+  ungroup()
+```
+
+#### Stock (Timber volume) 
+
+Stock (or timber volume) can be defined as the volume (with bark) stocked in each plot at each timestep. We could discuss if it would be good to transform this value into an economic outcome (taking into account species, dimensions and products), or if it is of interest at all, considering we have biomass and carbon (see below). Below, I present the average values per forest type and climatic and management scenarios, using a 4-year moving average.
+
+```{r timber_volume, warning=F, fig.cap = "Figure 4. Dynamics of average standing timber volume as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
+
+timber_species %>% 
+    ggplot(aes(Year,zoo::rollmean(TotalV_Alive_mean,45,na.pad=T), color = Management)) +
+    geom_ribbon(aes(ymin = zoo::rollmean(TotalV_Alive_mean - TotalV_Alive_sd,4,na.pad=T),
+                  ymax = zoo::rollmean(TotalV_Alive_mean + TotalV_Alive_sd,4, na.pad=T),
+                  fill = Management),
+              alpha = 0.4, color=NA) +
+    geom_line( size=1.45) +
+  scale_color_manual("Scenario",values = management_colors, 
+                       labels = c("Business as usual", "Wood energy",
+                                  "Carbon storage", "Adaptation")) +
+  scale_fill_manual("Scenario",values = management_colors, 
+                       labels = c("Business as usual", "Wood energy",
+                                  "Carbon storage", "Adaptation")) +
+      labs(x = "Year", y = "Standing Volume (m3?ha-1)") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+
+```
+
+#### Harvested timber 
+
+Harvested volume can be calculated in the same way as timber volume, but just accounting for the trees actually harvested during the period 
+
+```{r harvest species, warning=F}
+
+harvest_species <- timber_plot %>%
+    mutate(Year = Timestep + 2001) %>%
+    group_by (Forest_Type, Climate_Model, RCP, Management, Narrative, Recipe, Year) %>%
+    summarise_at(vars(TotalV_Harvested), c(TotalV_Harvested_mean="mean",TotalV_Harvested_sd="sd"), na.rm = T) %>%
+    ungroup()
+
+
+```
+
+
+```{r harvest, fig.cap = "Figure 5. Dynamics of mean harvested volume as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
+
+harvest_species %>% 
+    ggplot(aes(Year, TotalV_Harvested_mean, color = Management)) +
+    geom_line( size=1.15) +
+    scale_color_manual(values = management_colors) +
+    scale_fill_manual(values = management_colors) +
+    labs(x = "Year", y = "Harvested Timber Volume (m3?ha-1") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+```
+
+
+#### Allowable Cut (Timber supply)
+
+Annual allowable cut or timber supply can be defined as the amount of timber that is forecast to be available for harvesting over a specified time and under a particular management regime. It equals the annual increase in timber volume. Here, since we calculate timber volume for each year, we can calculate annual allowable cut simply by subtracting the volume calculated for one year from the volume calculated for the previous year, but taking into account if there has been any harvesting in the plot.
+
+```{r allowable cut, fig.cap = "Figure 6. Dynamics of average annual possibility as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
+   
+timber_species %>% 
+    ggplot(aes(Year,V_Inc_mean, color = Management)) +
+    geom_line( size=1.15) +
+    scale_color_manual(values =management_colors) +
+    scale_fill_manual(values = management_colors) +
+    labs(x = "Year", y = "Annual allowable cut (m3?ha-1)") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+
+```
+
+
+### 3.4.2 Carbon
+
+#### Carbon stock
+
+Carbon stock is the absolute quantity of carbon held within a forest at a specified time. The units of measurement are mass. Here, we first calculate biomass for each of the tree fractions (trunk, bark, branches and leaves), and then convert them into C using their corresponding carbon concentration. We then calculate carbon of the root system using the species-specific root:total C proportion (Montero et al. 2005). Below, we can see the average carbon stock per forest type and climatic and management scenarios, using a 5-year moving average.
+
+
+```{r carbon species, warning=F}
+
+carbon_species <- timber_plot %>%
+    mutate(Year = Timestep + 2001,
+           TotalC = TotalC_Alive + TotalC_Dead) %>%
+    group_by (Forest_Type, Climate_Model, RCP, Management, Narrative, Recipe, Year) %>%
+    summarize_at(vars(TotalC,C_Inc), c(mean="mean", sd="sd"), na.rm = T) %>%
+    ungroup()
+
+
+```
+
+```{r Carbon,  fig.cap = "Figure 7. Dynamics of carbon stock as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
+
+carbon_species %>% 
+    ggplot(aes(Year, zoo::rollmean(TotalC_mean,5,na.pad=T), color = Management)) +
+    geom_ribbon(aes(ymin = zoo::rollmean(TotalC_mean - TotalC_sd,5, na.pad=T), 
+                  ymax = zoo::rollmean(TotalC_mean + TotalC_sd,5, na.pad=T),
+                  fill = Management), 
+              alpha = 0.4, color=NA) +
+    geom_line( size=1.45) +
+    scale_color_manual(values = management_colors) +
+    scale_fill_manual(values = management_colors) +
+    labs(x = "Year", y = "Carbon Stock (t?ha-1)") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+
+```
+
+
+#### Sequestered carbon
+
+Sequestered carbon is the amount of C transferred from the atmosphere to the forest. It can be determined as the difference in carbon stock between two consecutive years, but taking into account C losses due to harvesting and natural tree mortality.
+
+We could discuss if harvested C should be really removed or not, since depending on the use this C will not be realeased immediately.
+
+```{r fixed_carbon,  fig.cap = "Figure 8. Dynamics of annual sequestered carbon as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
+
+carbon_species %>% 
+  ggplot(aes(Year,C_Inc_mean, color = Management)) +
+  geom_ribbon(aes(ymin = C_Inc_mean - C_Inc_sd,
+                  ymax = C_Inc_mean + C_Inc_sd,
+                  fill = Management),
+              alpha = 0.4, color=NA) +
+    geom_line( size=1.45) +
+    scale_color_manual(values = management_colors) +
+    scale_fill_manual(values = management_colors) +
+    labs(x = "Year", y = "Sequestered Carbon (t?ha-1?year-1)") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+              
+```
+
+
+
+### 3.4.3 Mushroom production
+
+```{r}
+
+load("./data/ES_data/MushroomYieldPred5_withnewdataandmixedmodels.Rdata")
+
+mushroom_plot <- bind_rows(mushrooms_CCLM_45, mushrooms_CCLM_85) %>%
+  mutate(Mushroom = Yield)
+
+  
+mushroom_species <- mushroom_plot %>%
+    filter(Management != "ORG") %>%
+    # mutate(Management = factor(Management)) %>%
+    mutate(Year = Timestep + 2001) %>%
+    group_by (Recipe, Climate_Model, RCP, Management, Narrative, Year, Forest_Type) %>%
+  summarize(n = n(),
+            Mushroom_mean = mean (Mushroom, na.rm=T),
+            Mushroom_sd = sd(Mushroom, na.rm=T)) %>%
+  ungroup()
+```
+
+
+Total mushroom production is calculated as a function of climate, species and forest structure, using the equations by De Miguel et al. (in prep.). Here we see the dynamics of mushroom yield through time as a function of management and climatic scenarios, using a 4-year moving average to facilitate seeing trends. Some values are too high and this needs to be discussed with Sergio de Miguel.
+
+```{r mushroom_total, warning=F, fig.cap = "Figure 9. Dynamics of average mushroom yield as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
+
+mushroom_species %>% 
+  ggplot(aes(Year,zoo::rollmean(Mushroom_mean,4,na.pad=T), color = Management)) +
+  geom_ribbon(aes(ymin = zoo::rollmean(Mushroom_mean - Mushroom_sd, 4,na.pad=T),
+                  ymax = zoo::rollmean(Mushroom_mean + Mushroom_sd,4, na.pad=T),
+                  fill = Management),
+              alpha = 0.4, color=NA) +
+  geom_line( size=1.05) +
+  scale_color_manual(values = management_colors) +
+  scale_fill_manual(values = management_colors) +
+  labs(x = "Year", y = "Mushroom Yield (kg?ha-1)") +
+  facet_grid(RCP ~ Forest_Type) +
+    newtheme
+
+
+```
+
+
+### 3.4.4 Blue water
+
+Blue water is the water exported via runoff or drainage to saturated layers, (i.e. ultimately going to streams and lakes). We can calculate it in absolute values (mm/yr) or relative to the incoming rainfall, which takes into account the differences in precipitation across plots and among years, thus better showing differences due to forest structure
+
+
+#### Blue water amount (mm/yr)
+
+
+```{r blue water, warning=F, fig.cap = "Figure 10. Dynamics of blue water as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE, eval = FALSE}
+
+bw_species %>% 
+    ggplot(aes(Year,zoo::rollmean(BW_mean,4,na.pad=T),
+                 color=Management)) +
+    geom_ribbon(aes(Year, ymin = zoo::rollmean(BW_mean - BW_sd, 4,na.pad=T),
+                  ymax = zoo::rollmean(BW_mean + BW_sd,4, na.pad=T), 
+                  fill = Management),
+    alpha = 0.4, color=NA) +
+    geom_line(size=1.05) +
+    scale_color_manual(values = management_colors) +
+    scale_fill_manual(values = management_colors) +
+    labs(x = "Year", y = "Blue water (mm?yr-1)") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+
+```
+
+
+#### Blue water relative to precipitation
+
+
+```{r blue water rel, warning=F, fig.cap = "Figure 11. Dynamics of relative bluewater as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE, eval = FALSE}
+
+bw_species %>% 
+    ggplot(aes(Year,BWrel_mean, color = Management)) +
+    # geom_ribbon(aes(ymin = BWrel_mean*100 - BWrel_sd*100,
+    #                 ymax = BWrel_mean*100 + BWrel_sd*100,
+    #     fill = Narrative),
+    # alpha = 0.4, color=NA) +
+    geom_line( size=1, alpha = 0.9) +
+    scale_color_manual(values = management_colors) +
+    scale_fill_manual(values = management_colors) +
+    labs(x = "Year", y = "Blue water (relative to precipitation)") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+
+```
+
+
+<!-- #### Blue water relative to BAU -->
+
+```{r blue water bau, warning=F, fig.cap = "Figure 13. Dynamics of relative bluewater as a function of climatic and management scenarios, compared to BAU (business as usual)", fig.width = 9, fig.height = 7,fig.align = "center", warning=FALSE}
+# bluewater_species %>% 
+#       ggplot(aes(Year,BWbau_mean*100, color = Management)) +
+#       geom_ribbon(aes(ymin = BWbau_mean*100 - BWbau_sd*100,
+#                       ymax = BWbau_mean*100 + BWbau_sd*100,
+#           fill = Management),
+#       alpha = 0.4, color=NA) +
+#       geom_line( size=1.45) +
+#      scale_color_manual(values = management_colors) +
+#      scale_fill_manual(values = management_colors) +
+#       theme_bw()+
+#       labs(x = "Year", y = "Blue water (relative to BAU)") +
+#       facet_grid( RCP ~ Climate_Model)
+```
+
+
+### 3.4.5 Erosion
+
+#### Erosion prevention service
+
+This is calculated using the USLE equations
+
+
+```{r ER, warning=F, fig.cap = "Figure 12. Dynamics of erosion prevention service provided by forests as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE, eval = FALSE}
+
+
+er_species %>% 
+  ggplot(aes(Year,ER_mean, color = Management)) +
+  geom_ribbon(aes(ymin = ER_mean - ER_sd,
+                  ymax = ER_mean + ER_sd,
+                  fill = Narrative),
+              alpha = 0.4, color=NA) +
+  geom_line( size=1.45) +
+  scale_color_manual(values = management_colors) +
+  scale_fill_manual(values = management_colors) +
+  theme_bw() +
+  labs(x = "Year", y = "Erosion prevention service") +
+  facet_grid( RCP ~ Scenario)
+```
+
+<!-- #### Erosion prevention service (relative to BAU) -->
+
+```{r ER BAU, warning=F, fig.cap = "Figure 15. Dynamics of erosion prevention service (relative to BAU) as a function of climatic and management scenarios", fig.width = 9, fig.height = 7,fig.align = "center", warning=FALSE, eval = FALSE}
+er_species %>%
+    ggplot(aes(Year,ERbau_mean*100, color = Management)) +
+    geom_ribbon(aes(ymin = ERbau_mean*100 - ERbau_sd*100,
+                  ymax = ERbau_mean*100 + ERbau_sd*100,
+      fill = Management),
+    alpha = 0.4, color=NA) +
+    geom_line( size=1.45) +
+    scale_color_manual(values = management_colors) +
+    scale_fill_manual(values = management_colors) +
+    labs(x = "Year", y = "Erosion prevention service (relative to BAU)") +
+    facet_grid( RCP ~ Climate_Model) +
+    newtheme
+```
+
+
+## 3.5 Ecosystem services (by period)
+
+We define several periods to assess the provision of ecosystem services. As agreed in the INFORMED project, we chose these intervals:
+  - Short-term: 2001 - 2035
+  - Medium-term: 2036-2050
+  - Long-term: 2051 - 2100
+  
+For each of these divisions, we can calculate the mean and accumulated provision of ecosystem services per plot and period (and the total for the whole study period)
+
+
+
+```{r join services, warning=F, message=F}
+
+es_plot <- left_join(timber_plot, mushroom_plot,  
+                     by = c("Timestep", "Parcela", "Forest_Type", "Climate_Model",
+                            "RCP", "Management", "Narrative"))%>%
+  # left_join(bw_plot) %>%
+  # left_join(er_plot) %>%
+  ungroup() %>%
+  mutate(Management = as.factor(Management),
+         Management = fct_relevel(Management, "BAU", "BIO", "CAR", "ADA"),
+         Temp = rowMeans(dplyr::select(., tm01:tm12)),
+         Prec = rowSums(dplyr::select(., pr01:pr12)),
+         Year = 2001 + Timestep,
+         Period = parse_factor(case_when(
+           Year < 2036 ~ "Short",
+           Year >= 2036 & Year < 2051 ~ "Medium",
+           Year >= 2051 ~ "Long"),
+           levels = c("Short", "Medium", "Long")))
+
+
+selected_vars <- c("TotalV_Harvested", "C_Inc", "Mushroom", "Temp", "Prec")
+
+
+```
+
+```{r services per period, warning=F, message = F}
+
+
+es_plot_period <- es_plot %>%
+  group_by (Parcela,Forest_Type, RCP, Management, Narrative, Period) %>%
+  summarise_at(.vars = selected_vars,
+               .funs = c(sum = "sum",mean="mean", sd= "sd"),
+               na.rm=T)
+
+es_plot_all <- es_plot %>%
+  group_by (Parcela,Forest_Type, RCP, Management, Narrative) %>%
+  summarise_at(.vars = selected_vars,
+               .funs = c(sum = "sum",mean="mean", sd= "sd"),
+               na.rm=T)
+
+```
+
+### 3.5.1. Timber volume
+```{r harvest_period, warning=F, fig.cap = "Figure 18. Mean provision of harvested timber volume as a function of climatic and management scenarios", fig.width = 8, fig.align = "center", warning=FALSE}
+
+es_plot_period %>%
+  group_by(RCP, Management, Narrative, Period) %>%
+  summarise(Harvested_Volume = mean(TotalV_Harvested_mean)) %>%
+  ggplot() +
+  geom_bar(aes(fill=Management, y=Harvested_Volume, x=Management),
+           position="dodge", stat="identity") +
+    facet_grid(RCP~Period) +
+    scale_fill_manual(values = management_colors) +
+newtheme
+
+```
+
+### 3.5.2. Carbon sequestration
+
+```{r carbon_period, warning=F, fig.cap = "Figure 19. Mean provision of annual sequestered carbon as a function of climatic and management scenarios", fig.width = 8, fig.align = "center", warning=FALSE}
+
+es_plot_period %>%
+    group_by(RCP, Management, Narrative, Period) %>%
+    summarise(Sequestered_carbon = mean(C_Inc_mean)) %>%
+    ggplot() +
+    geom_bar(aes(fill=Management, y=Sequestered_carbon, x=Management),
+           position="dodge", stat="identity") +
+    facet_grid(RCP~Period) +
+    scale_fill_manual(values =management_colors) +
+    newtheme
+```
+
+
+### 3.5.3. Mushroom production
+
+```{r mushroom_period, warning=F, fig.cap = "Figure 20. Mean provision of mushroom yield as a function of climatic and management scenarios", fig.width = 8, fig.align = "center", warning=FALSE}
+
+es_plot_period %>%
+    group_by(RCP, Management, Narrative, Period) %>%
+    summarise(Mushroom_production = mean(Mushroom_mean)) %>%
+    ggplot() +
+    geom_bar(aes(fill=Management, y=Mushroom_production, x=Management),
+           position="dodge", stat="identity") +
+    facet_grid(RCP~Period) +
+    scale_fill_manual(values = management_colors) +
+    newtheme
+```
+
+
+### 3.5.4. Blue water
+
+
+```{r bw_period, warning=F, fig.cap = "Figure 21. Mean provision of blue water volume as a function of climatic and management scenarios", fig.width = 8, fig.align = "center", warning=FALSE, eval = FALSE}
+
+es_plot_period %>%
+    group_by(RCP, Management, Narrative, Period) %>%
+    summarise(Blue_water = mean(BW_mean)) %>%
+    ggplot() +
+    geom_bar(aes(fill=Narrative, y=Blue_water, x=Narrative),
+           position="dodge", stat="identity") +
+    facet_grid(RCP~Period) +
+    scale_fill_manual(values = management_colors) +
+    newtheme
+
+```
+
+### 3.5.5. Erosion
+
+```{r er_period, warning=F, fig.cap = "Figure 22. Mean provision of erosion prevention as a function of climatic and management scenarios", fig.width = 8, fig.align = "center", warning=FALSE, eval = FALSE}
+
+es_plot_period %>%
+  group_by(RCP, Management, Narrative, Period) %>%
+  summarise(Erosion = mean(ER_mean)) %>%
+  ggplot() +
+  geom_bar(aes(fill=Management, y=Erosion, x=Management),
+           position="dodge", stat="identity") +
+    facet_grid(RCP~Period) +
+    scale_fill_manual(values = management_colors) +
+theme_bw()
+
+```
+
+
+
+
+
+## 3.6 Ecosystem services relative to BAU
+
+We calculate the provision of each ecosystem service as compared (ratio) to the business as usual scenario. This can be calculated for each period (short, medium and long term) or for the whole study period.
+
+```{r}
+
+es_solsones_period_bau <- es_plot_period  %>%
+  group_by(RCP, Management, Narrative, Period) %>%
+  summarise_at(.vars= vars(TotalV_Harvested_sum:Mushroom_sum),
+               .funs=c(sum="sum"),na.rm=T) %>%
+  arrange(Management, RCP, Period)  %>%
+    ungroup() %>%
+  mutate(Hv =  TotalV_Harvested_sum_sum / TotalV_Harvested_sum_sum[Management == "BAU"],
+         Cb =  C_Inc_sum_sum / C_Inc_sum_sum[Management == "BAU"],
+         Ms = Mushroom_sum_sum / Mushroom_sum_sum[Management == "BAU"],
+         # Er = ER_sum_sum / ER_sum_sum[Management == "BAU"],
+         # Bw = BW_sum_sum / BW_sum_sum[Management == "BAU"],
+         NULL) %>%
+  gather(ES, value, Hv:Ms) %>%
+  mutate(ES= factor(ES, levels = c("Hv", "Cb", "Ms")))
+
+
+es_solsones_all_bau <- es_plot_period %>%
+  group_by(RCP, Management, Narrative) %>%
+  summarise_at(.vars= vars(TotalV_Harvested_sum:Mushroom_sum),
+               .funs=c(sum="sum"),na.rm=T) %>%
+  arrange(Management, RCP)  %>%
+    ungroup() %>%
+  mutate(Hv =  TotalV_Harvested_sum_sum / TotalV_Harvested_sum_sum[Management == "BAU"],
+         Cb =  C_Inc_sum_sum / C_Inc_sum_sum[Management == "BAU"],
+         Ms = Mushroom_sum_sum / Mushroom_sum_sum[Management == "BAU"],
+         # Er = ER_sum_sum / ER_sum_sum[Management == "BAU"],
+         # Bw = BW_sum_sum / BW_sum_sum[Management == "BAU"],
+         NULL) %>%
+  gather(ES, value, Hv:Ms) %>%
+  mutate(ES= factor(ES, levels = c("Hv", "Cb", "Ms")))
+
+
+```
+
+
+
+```{r, fig.width = 8, fig.align = "center" }
+
+es_solsones_all_bau %>%
+    filter(Management != "BAU") %>%
+    mutate(ES = fct_recode(ES,
+                         "Harvested timber" = "Hv",
+                         "Sequestered Carbon" = "Cb",
+                         "Mushroom yield" = "Ms")) %>%
+    ggplot() +
+    geom_bar(aes(fill=ES,x=factor(ES),  y=value),width=1,
+           position="identity", stat="identity") +
+    geom_hline(yintercept=seq(0, 1.15, by=0.25), color="grey", size=0.15)+
+    geom_hline(yintercept=1, color="black", size=0.5)+
+    geom_vline(xintercept=seq(0.5, 4.5, by=1), color="white") +
+    scale_x_discrete(breaks = NULL) +
+    scale_y_continuous(breaks = seq(0, 1.5,0.25), labels = seq(0,1.5,0.25)) +
+    facet_grid(RCP~Management) +
+    scale_fill_manual(values=okabe_ito) +
+    newtheme +
+    coord_polar() +
+    labs(x = "", y = "")  + 
+    theme(legend.position = "top",
+        axis.text.x = element_blank())
+
+```
+
+```{r, fig.width = 8, fig.align = "center" }
+
+  hey <- es_plot_period  %>%
+  group_by(RCP, Management, Narrative) %>%
+  summarise_at(.vars= vars(TotalV_Harvested_sum:Mushroom_sum),
+               .funs=c(sum="sum"),na.rm=T) %>%
+  arrange(Management, RCP)  %>%
+    ungroup() %>%
+  mutate(RCP = as.factor(RCP),
+         Hv =  TotalV_Harvested_sum_sum / TotalV_Harvested_sum_sum[Management == "BAU"],
+         Cb =  C_Inc_sum_sum / C_Inc_sum_sum[Management == "BAU"],
+         Ms = Mushroom_sum_sum / Mushroom_sum_sum[Management == "BAU"],
+         # Er = ER_sum_sum / ER_sum_sum[Management == "BAU"],
+         # Bw = BW_sum_sum / BW_sum_sum[Management == "BAU"],
+         NULL) %>%
+  filter(Management != "BAU")
+
+
+hey
+ 
+```
+
+
+## 3.7 Trade-offs between Ecosystem services
+
+### Spatial trade-off
+
+This is the correlation between the provision of two ES across the plots, considering the overall study period
+
+
+```{r spatial_correlation}
+
+## First we conduct analysis of spatial correlation, so we calculate, for each timestep, the added value for each ecosystem service
+  es_plot_all <- es_plot %>%
+  group_by (Parcela,Forest_Type, RCP, Management, Narrative) %>%
+  summarise_at(.vars = selected_vars,
+               .funs = c(sum = "sum"),
+               na.rm=T)
+
+
+new_selected_vars <- c("TotalV_Harvested_sum", "C_Inc_sum", "Mushroom_sum", "Prec_sum")
+new_names = c("Harvest", "Carbon", "Mushroom",  "Precipitation")
+
+BAU_45 <- es_plot_all %>%
+  filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+  ggtitle("Business as usual | Moderate climate change") +
+  theme_bw() + theme(strip.background =  element_blank()) 
+
+BAU_85 <- es_plot_all %>%
+  filter(RCP == "85", Management == "BAU") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+    ggtitle("Business as usual | Severe climate change") +
+  theme_bw() + theme(strip.background =  element_blank())
+
+BIO_45 <- es_plot_all %>%
+  filter(RCP == "45", Management == "BIO") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+     ggtitle("Biomass production | Moderate climate change") +
+ theme_bw() + theme(strip.background =  element_blank())
+
+BIO_85 <- es_plot_all %>%
+  filter(RCP == "85", Management == "BIO") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+    ggtitle("Biomass production | Severe climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+CAR_45 <- es_plot_all %>%
+  filter(RCP == "45", Management == "CAR") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+      ggtitle("Carbon storage | Moderate climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+CAR_85 <- es_plot_all %>%
+  filter(RCP == "85", Management == "CAR") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+      ggtitle("Carbon storage | Severe climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+
+ADA_45 <- es_plot_all %>%
+  filter(RCP == "45", Management == "ADA") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+          ggtitle("Adaptation | Moderate climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+ADA_85 <- es_plot_all %>%
+  filter(RCP == "85", Management == "ADA") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+       ggtitle("Adaptation | Severe climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+
+BAU_45
+BAU_85
+BIO_45
+BIO_85
+CAR_45
+CAR_85
+ADA_45
+ADA_85
+```
+
+### Temporal correlation
+
+This is the correlation between the provision of two ES across time, considering all the studied plots
+
+```{r temporal_correlation}
+
+## First we conduct analysis of spatial correlation, so we calculate, for each timestep, the added value for each ecosystem service
+  es_year_all <- es_plot %>%
+  group_by (Timestep,Forest_Type, RCP, Management, Narrative) %>%
+  summarise_at(.vars = selected_vars,
+               .funs = c(sum = "sum"),
+               na.rm=T)
+
+
+# new_selected_vars <- c("Volume_Harvest_sum", "Carbon_Inc_sum", "Mushroom_sum", "BW_sum", "ER_sum", "Prec_sum")
+# new_names = c("Harvest", "Carbon", "Mushroom", "Blue water", "Erosion", "Precipitation")
+
+BAU_45_time <- es_year_all %>%
+  filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+          ggtitle("Business as usual | Moderate climate change") +
+theme_bw() + theme(strip.background =  element_blank()) 
+
+BAU_85_time <- es_year_all %>%
+  filter(RCP == "85", Management == "BAU") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+            ggtitle("Business as usual | Severe climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+BIO_45_time <- es_year_all %>%
+  filter(RCP == "45", Management == "BIO") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+            ggtitle("Biomass production | Moderate climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+BIO_85_time <- es_year_all %>%
+  filter(RCP == "85", Management == "BIO") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+              ggtitle("Biomass production | Severe climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+CAR_45_time <- es_year_all %>%
+  filter(RCP == "45", Management == "CAR") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+              ggtitle("Carbon storage | Moderate climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+CAR_85_time <- es_year_all %>%
+  filter(RCP == "85", Management == "CAR") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+              ggtitle("Carbon storage | Severe climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+ADA_45_time <- es_plot_all %>%
+  filter(RCP == "45", Management == "ADA") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+              ggtitle("Adaptation | Moderate climate change") +
+ theme_bw() + theme(strip.background =  element_blank())
+
+ADA_85_time <- es_plot_all %>%
+  filter(RCP == "85", Management == "ADA") %>% ungroup() %>%
+    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
+           lower=list(continuous="smooth")) +
+               ggtitle("Adaptation | Severe climate change") +
+theme_bw() + theme(strip.background =  element_blank())
+
+
+BAU_45_time
+BAU_85_time
+BIO_45_time
+BIO_85_time
+CAR_45_time
+CAR_85_time
+ADA_45_time
+ADA_85_time
+```
+
+
+
+
+
+
+
