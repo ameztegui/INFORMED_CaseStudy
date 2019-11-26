@@ -14,6 +14,11 @@ library(tidyr)
 
 load("./data/raw_data_CD.Rdata")
 
+data_CD <- raw_data_CD %>%
+    filter(Type == "Adult", `Dead Code` == "Alive") 
+
+save(data_CD, file = "./data/data_CD.Rdata")
+
 data_plot <- raw_data_CD %>%
     filter(Type == "Adult", `Dead Code` == "Alive") %>%
     group_by(Parcela,  Forest_Type, Climate_Model, RCP, Management,  Narrative, Recipe, Timestep) %>%
