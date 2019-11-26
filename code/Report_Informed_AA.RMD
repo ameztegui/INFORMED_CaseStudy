@@ -10,7 +10,7 @@ output:
 ```{r "setup", echo =F}
 rm(list=ls())
 
-knitr::opts_knit$set(root.dir = "D:/Aitor/INFORMED_CaseStudy")
+knitr::opts_knit$set(root.dir = "../")
 knitr::opts_chunk$set(echo =F)
 
 ```
@@ -375,7 +375,7 @@ Stock (or timber volume) can be defined as the volume (with bark) stocked in eac
 ```{r timber_volume, warning=F, fig.cap = "Figure 4. Dynamics of average standing timber volume as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
 
 timber_species %>% 
-    ggplot(aes(Year,zoo::rollmean(TotalV_Alive_mean,45,na.pad=T), color = Management)) +
+    ggplot(aes(Year,zoo::rollmean(TotalV_Alive_mean,4,na.pad=T), color = Management)) +
     geom_ribbon(aes(ymin = zoo::rollmean(TotalV_Alive_mean - TotalV_Alive_sd,4,na.pad=T),
                   ymax = zoo::rollmean(TotalV_Alive_mean + TotalV_Alive_sd,4, na.pad=T),
                   fill = Management),
@@ -653,6 +653,44 @@ er_species %>%
 ```
 
 
+### 3.4.6 Biodiversity
+
+#### Total deadwood volume
+
+```{r deadwood species, warning=F}
+
+# Firts, we need to calculate each timber & biomass variable for each forest type and scenario
+deadwood_species <- timber_plot %>%
+  mutate(Year = Timestep + 2001) %>%
+  group_by (Forest_Type, Climate_Model, RCP, Management, Narrative,
+             Recipe, Year) %>%
+    summarise(TotalV_Dead_mean = mean(TotalV_Dead, na.rm = T),
+              TotalV_Dead_sd = sd(TotalV_Dead, na.rm = T)) %>%
+  ungroup()
+```
+
+
+```{r deadwood_volume, warning=F, fig.cap = "Figure 16. Dynamics of deadwood volume as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE}
+
+deadwood_species %>% 
+    ggplot(aes(Year,zoo::rollmean(TotalV_Dead_mean,4,na.pad=T), color = Management)) +
+    geom_ribbon(aes(ymin = zoo::rollmean(TotalV_Dead_mean - TotalV_Dead_sd,4,na.pad=T),
+                  ymax = zoo::rollmean(TotalV_Dead_mean + TotalV_Dead_sd,4, na.pad=T),
+                  fill = Management),
+              alpha = 0.4, color=NA) +
+    geom_line( size=1.45) +
+  scale_color_manual("Scenario",values = management_colors, 
+                       labels = c("Business as usual", "Wood energy",
+                                  "Carbon storage", "Adaptation")) +
+  scale_fill_manual("Scenario",values = management_colors, 
+                       labels = c("Business as usual", "Wood energy",
+                                  "Carbon storage", "Adaptation")) +
+      labs(x = "Year", y = "Standing Volume (m3?ha-1)") +
+    facet_grid(RCP ~ Forest_Type) +
+    newtheme
+
+```
+
 ## 3.5 Ecosystem services (by period)
 
 We define several periods to assess the provision of ecosystem services. As agreed in the INFORMED project, we chose these intervals:
@@ -684,7 +722,7 @@ es_plot <- left_join(timber_plot, mushroom_plot,
            levels = c("Short", "Medium", "Long")))
 
 
-selected_vars <- c("TotalV_Harvested", "C_Inc", "Mushroom", "Temp", "Prec")
+selected_vars <- c("TotalV_Harvested", "C_Inc", "Mushroom", "TotalV_Dead","Temp", "Prec")
 
 
 ```
@@ -786,8 +824,19 @@ theme_bw()
 
 ```
 
+### 3.5.6. Deadwood volume
+```{r deadwood_period, warning=F, fig.cap = "Figure 23. Mean provision of harvested timber volume as a function of climatic and management scenarios", fig.width = 8, fig.align = "center", warning=FALSE}
 
-
+es_plot_period %>%
+  group_by(RCP, Management, Narrative, Period) %>%
+  summarise(Deadwood_Volume = mean(TotalV_Dead_mean)) %>%
+  ggplot() +
+  geom_bar(aes(fill=Management, y=Deadwood_Volume, x=Management),
+           position="dodge", stat="identity") +
+    facet_grid(RCP~Period) +
+    scale_fill_manual(values = management_colors) +
+newtheme
+```
 
 
 ## 3.6 Ecosystem services relative to BAU
@@ -798,7 +847,7 @@ We calculate the provision of each ecosystem service as compared (ratio) to the 
 
 es_solsones_period_bau <- es_plot_period  %>%
   group_by(RCP, Management, Narrative, Period) %>%
-  summarise_at(.vars= vars(TotalV_Harvested_sum:Mushroom_sum),
+  summarise_at(.vars= vars(TotalV_Harvested_sum:TotalV_Dead_sum),
                .funs=c(sum="sum"),na.rm=T) %>%
   arrange(Management, RCP, Period)  %>%
     ungroup() %>%
@@ -807,14 +856,15 @@ es_solsones_period_bau <- es_plot_period  %>%
          Ms = Mushroom_sum_sum / Mushroom_sum_sum[Management == "BAU"],
          # Er = ER_sum_sum / ER_sum_sum[Management == "BAU"],
          # Bw = BW_sum_sum / BW_sum_sum[Management == "BAU"],
+         Dw = TotalV_Dead_sum_sum / TotalV_Dead_sum_sum[Management == "BAU"],
          NULL) %>%
-  gather(ES, value, Hv:Ms) %>%
-  mutate(ES= factor(ES, levels = c("Hv", "Cb", "Ms")))
+  gather(ES, value, Hv:Dw) %>%
+  mutate(ES= factor(ES, levels = c("Hv", "Cb", "Ms", "Dw")))
 
 
 es_solsones_all_bau <- es_plot_period %>%
   group_by(RCP, Management, Narrative) %>%
-  summarise_at(.vars= vars(TotalV_Harvested_sum:Mushroom_sum),
+  summarise_at(.vars= vars(TotalV_Harvested_sum:TotalV_Dead_sum),
                .funs=c(sum="sum"),na.rm=T) %>%
   arrange(Management, RCP)  %>%
     ungroup() %>%
@@ -823,9 +873,10 @@ es_solsones_all_bau <- es_plot_period %>%
          Ms = Mushroom_sum_sum / Mushroom_sum_sum[Management == "BAU"],
          # Er = ER_sum_sum / ER_sum_sum[Management == "BAU"],
          # Bw = BW_sum_sum / BW_sum_sum[Management == "BAU"],
+         Dw = TotalV_Dead_sum_sum / TotalV_Dead_sum_sum[Management == "BAU"],
          NULL) %>%
-  gather(ES, value, Hv:Ms) %>%
-  mutate(ES= factor(ES, levels = c("Hv", "Cb", "Ms")))
+  gather(ES, value, Hv:Dw) %>%
+  mutate(ES= factor(ES, levels = c("Hv", "Cb", "Ms", "Dw")))
 
 
 ```
@@ -839,7 +890,8 @@ es_solsones_all_bau %>%
     mutate(ES = fct_recode(ES,
                          "Harvested timber" = "Hv",
                          "Sequestered Carbon" = "Cb",
-                         "Mushroom yield" = "Ms")) %>%
+                         "Mushroom yield" = "Ms",
+                         "Biodiversity" = "Dw")) %>%
     ggplot() +
     geom_bar(aes(fill=ES,x=factor(ES),  y=value),width=1,
            position="identity", stat="identity") +
@@ -898,8 +950,8 @@ This is the correlation between the provision of two ES across the plots, consid
                na.rm=T)
 
 
-new_selected_vars <- c("TotalV_Harvested_sum", "C_Inc_sum", "Mushroom_sum", "Prec_sum")
-new_names = c("Harvest", "Carbon", "Mushroom",  "Precipitation")
+new_selected_vars <- c("TotalV_Harvested_sum", "C_Inc_sum", "Mushroom_sum", "TotalV_Dead_sum", "Prec_sum")
+new_names = c("Harvest", "Carbon", "Mushroom", "Biodiversity", "Precipitation")
 
 BAU_45 <- es_plot_all %>%
   filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
