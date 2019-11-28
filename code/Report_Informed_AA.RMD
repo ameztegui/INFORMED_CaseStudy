@@ -28,11 +28,12 @@ library(patchwork)
 # library(rgeos)
 # library(rgdal)
 # library(maptools)
-# library(ggradar)
+# library(ggrADAr)
 # library(fmsb) # for radar chart
 # library(ggthemes)
 library(GGally)
 library(zoo)
+library(corrplot)
 
 
 # load("./Rdata/SortieOutput/raw_data_CD.Rdata")
@@ -953,79 +954,153 @@ This is the correlation between the provision of two ES across the plots, consid
 new_selected_vars <- c("TotalV_Harvested_sum", "C_Inc_sum", "Mushroom_sum", "TotalV_Dead_sum", "Prec_sum")
 new_names = c("Harvest", "Carbon", "Mushroom", "Biodiversity", "Precipitation")
 
-BAU_45 <- es_plot_all %>%
-  filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-  ggtitle("Business as usual | Moderate climate change") +
-  theme_bw() + theme(strip.background =  element_blank()) 
 
-BAU_85 <- es_plot_all %>%
-  filter(RCP == "85", Management == "BAU") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-    ggtitle("Business as usual | Severe climate change") +
-  theme_bw() + theme(strip.background =  element_blank())
+# RCP4.5
+  cor_BAU_45_pears <- es_plot_all %>%
+     filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_BAU_45_pears <- corr.p(cor_BAU_45_pears, 36,adjust="bonferroni",alpha=.05)
 
-BIO_45 <- es_plot_all %>%
-  filter(RCP == "45", Management == "BIO") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-     ggtitle("Biomass production | Moderate climate change") +
- theme_bw() + theme(strip.background =  element_blank())
+ cor_BAU_45_spear <- es_plot_all %>%
+     filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+ res_BAU_45_spear <- corr.p(cor_BAU_45_spear, 36,adjust="bonferroni",alpha=.05)
 
-BIO_85 <- es_plot_all %>%
-  filter(RCP == "85", Management == "BIO") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-    ggtitle("Biomass production | Severe climate change") +
-theme_bw() + theme(strip.background =  element_blank())
+cor_BIO_45_pears <- es_plot_all %>%
+     filter(RCP == "45", Management == "BIO") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+res_BIO_45_pears <- corr.p(cor_BIO_45_pears, 36,adjust="bonferroni",alpha=.05)
 
-CAR_45 <- es_plot_all %>%
-  filter(RCP == "45", Management == "CAR") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-      ggtitle("Carbon storage | Moderate climate change") +
-theme_bw() + theme(strip.background =  element_blank())
+cor_BIO_45_spear <- es_plot_all %>%
+     filter(RCP == "45", Management == "BIO") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+res_BIO_45_spear<- corr.p(cor_BIO_45_spear, 36,adjust="bonferroni",alpha=.05)
 
-CAR_85 <- es_plot_all %>%
-  filter(RCP == "85", Management == "CAR") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-      ggtitle("Carbon storage | Severe climate change") +
-theme_bw() + theme(strip.background =  element_blank())
+cor_CAR_45_pears <- es_plot_all %>%
+     filter(RCP == "45", Management == "CAR") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+res_CAR_45_pears <- corr.p(cor_CAR_45_pears, 36,adjust="bonferroni",alpha=.05)
 
+cor_CAR_45_spear <- es_plot_all %>%
+     filter(RCP == "45", Management == "CAR") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+res_CAR_45_spear <- corr.p(cor_CAR_45_spear, 36,adjust="bonferroni",alpha=.05)
 
-ADA_45 <- es_plot_all %>%
-  filter(RCP == "45", Management == "ADA") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-          ggtitle("Adaptation | Moderate climate change") +
-theme_bw() + theme(strip.background =  element_blank())
-
-ADA_85 <- es_plot_all %>%
-  filter(RCP == "85", Management == "ADA") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type, alpha=0.6), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-       ggtitle("Adaptation | Severe climate change") +
-theme_bw() + theme(strip.background =  element_blank())
+cor_ADA_45_pears <- es_plot_all %>%
+     filter(RCP == "45", Management == "ADA") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+res_ADA_45_pears <- corr.p(cor_ADA_45_pears, 36,adjust="bonferroni",alpha=.05)
 
 
-BAU_45
-BAU_85
-BIO_45
-BIO_85
-CAR_45
-CAR_85
-ADA_45
-ADA_85
+cor_ADA_45_spear <- es_plot_all %>%
+     filter(RCP == "45", Management == "ADA") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+res_ADA_45_spear <- corr.p(cor_ADA_45_spear, 36,adjust="bonferroni",alpha=.05)
+
+
+# RCP8.5
+  cor_BAU_85_pears <- es_plot_all %>%
+     filter(RCP == "85", Management == "BAU") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_BAU_85_pears <- corr.p(cor_BAU_85_pears, 36,adjust="bonferroni",alpha=.05)
+
+ cor_BAU_85_spear <- es_plot_all %>%
+     filter(RCP == "85", Management == "BAU") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+ res_BAU_85_spear <- corr.p(cor_BAU_85_spear, 36,adjust="bonferroni",alpha=.05)
+
+cor_BIO_85_pears <- es_plot_all %>%
+     filter(RCP == "85", Management == "BIO") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+res_BIO_85_pears <- corr.p(cor_BIO_85_pears, 36,adjust="bonferroni",alpha=.05)
+
+cor_BIO_85_spear <- es_plot_all %>%
+     filter(RCP == "85", Management == "BIO") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+res_BIO_85_spear<- corr.p(cor_BIO_85_spear, 36,adjust="bonferroni",alpha=.05)
+
+cor_CAR_85_pears <- es_plot_all %>%
+     filter(RCP == "85", Management == "CAR") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+res_CAR_85_pears <- corr.p(cor_CAR_85_pears, 36,adjust="bonferroni",alpha=.05)
+
+cor_CAR_85_spear <- es_plot_all %>%
+     filter(RCP == "85", Management == "CAR") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+res_CAR_85_spear <- corr.p(cor_CAR_85_spear, 36,adjust="bonferroni",alpha=.05)
+
+cor_ADA_85_pears <- es_plot_all %>%
+     filter(RCP == "85", Management == "ADA") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+res_ADA_85_pears <- corr.p(cor_ADA_85_pears, 36,adjust="bonferroni",alpha=.05)
+
+
+cor_ADA_85_spear <- es_plot_all %>%
+     filter(RCP == "85", Management == "ADA") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="spearman")
+res_ADA_85_spear <- corr.p(cor_ADA_85_spear, 36,adjust="bonferroni",alpha=.05)
 ```
+
+```{r}
+
+col2 <- colorRampPalette(rev(c("#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7",
+        "#FFFFFF", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061")) )
+
+plot_corr <- function(data, res, sig) {
+     corrplot(data, method = "color", type = "upper", diag = FALSE,
+               addCoef.col = "black", col = col2(200),
+               tl.pos ="n", cl.ratio = 0.3, cl.align = "r",
+               tl.col = "black", p.mat = res$p, sig.level = sig, insig = "pch")
+}
+               
+
+par(mfcol=c(2,2))
+par(mar=c(5.1,4.1,4.1,2.1))
+plot_corr(cor_BAU_45_pears, res_BAU_45_pears, 0.05 )
+plot_corr(cor_BIO_45_pears, res_BIO_45_pears, 0.05)
+plot_corr(cor_CAR_45_pears, res_CAR_45_pears, 0.05)
+plot_corr(cor_ADA_45_pears, res_ADA_45_pears, 0.05)
+
+
+```
+
+
+```{r}
+
+par(mfcol=c(2,2))
+par(mar=c(5.1,4.1,4.1,2.1))
+plot_corr(cor_BAU_45_pears, res_BAU_85_pears, 0.05 )
+plot_corr(cor_BIO_45_pears, res_BIO_85_pears, 0.05)
+plot_corr(cor_CAR_45_pears, res_CAR_85_pears, 0.05)
+plot_corr(cor_ADA_45_pears, res_ADA_85_pears, 0.05)
+
+
+```
+
+
+
 
 ### Temporal correlation
 
 This is the correlation between the provision of two ES across time, considering all the studied plots
 
-```{r temporal_correlation}
+```{r temporal_correlation, eval = F}
 
 ## First we conduct analysis of spatial correlation, so we calculate, for each timestep, the added value for each ecosystem service
   es_year_all <- es_plot %>%
@@ -1034,77 +1109,81 @@ This is the correlation between the provision of two ES across time, considering
                .funs = c(sum = "sum"),
                na.rm=T)
 
-
-# new_selected_vars <- c("Volume_Harvest_sum", "Carbon_Inc_sum", "Mushroom_sum", "BW_sum", "ER_sum", "Prec_sum")
-# new_names = c("Harvest", "Carbon", "Mushroom", "Blue water", "Erosion", "Precipitation")
-
-BAU_45_time <- es_year_all %>%
-  filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-          ggtitle("Business as usual | Moderate climate change") +
-theme_bw() + theme(strip.background =  element_blank()) 
-
-BAU_85_time <- es_year_all %>%
-  filter(RCP == "85", Management == "BAU") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-            ggtitle("Business as usual | Severe climate change") +
-theme_bw() + theme(strip.background =  element_blank())
-
-BIO_45_time <- es_year_all %>%
-  filter(RCP == "45", Management == "BIO") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-            ggtitle("Biomass production | Moderate climate change") +
-theme_bw() + theme(strip.background =  element_blank())
-
-BIO_85_time <- es_year_all %>%
-  filter(RCP == "85", Management == "BIO") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-              ggtitle("Biomass production | Severe climate change") +
-theme_bw() + theme(strip.background =  element_blank())
-
-CAR_45_time <- es_year_all %>%
-  filter(RCP == "45", Management == "CAR") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-              ggtitle("Carbon storage | Moderate climate change") +
-theme_bw() + theme(strip.background =  element_blank())
-
-CAR_85_time <- es_year_all %>%
-  filter(RCP == "85", Management == "CAR") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-              ggtitle("Carbon storage | Severe climate change") +
-theme_bw() + theme(strip.background =  element_blank())
-
-ADA_45_time <- es_plot_all %>%
-  filter(RCP == "45", Management == "ADA") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-              ggtitle("Adaptation | Moderate climate change") +
- theme_bw() + theme(strip.background =  element_blank())
-
-ADA_85_time <- es_plot_all %>%
-  filter(RCP == "85", Management == "ADA") %>% ungroup() %>%
-    ggpairs( mapping = aes(color = Forest_Type), columns =new_selected_vars,columnLabels = new_names,
-           lower=list(continuous="smooth")) +
-               ggtitle("Adaptation | Severe climate change") +
-theme_bw() + theme(strip.background =  element_blank())
+new_selected_vars <- c("TotalV_Harvested_sum", "C_Inc_sum", "Mushroom_sum", "TotalV_Dead_sum", "Prec_sum")
+new_names = c("Harvest", "Carbon", "Mushroom", "Biodiversity", "Precipitation")
 
 
-BAU_45_time
-BAU_85_time
-BIO_45_time
-BIO_85_time
-CAR_45_time
-CAR_85_time
-ADA_45_time
-ADA_85_time
+# RCP4.5
+  BAU_45_time <- es_year_all %>%
+     filter(RCP == "45", Management == "BAU") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_BAU_45_time <- corr.p(BAU_45_time, 36,adjust="bonferroni",alpha=.05)
+
+  BIO_45_time <- es_year_all %>%
+     filter(RCP == "45", Management == "BIO") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_BIO_45_time <- corr.p(BIO_45_time, 36,adjust="bonferroni",alpha=.05)
+
+  CAR_45_time <- es_year_all %>%
+     filter(RCP == "45", Management == "CAR") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_CAR_45_time <- corr.p(CAR_45_time, 36,adjust="bonferroni",alpha=.05)
+
+    ADA_45_time <- es_year_all %>%
+     filter(RCP == "45", Management == "ADA") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_ADA_45_time <- corr.p(ADA_45_time, 36,adjust="bonferroni",alpha=.05)
+
+
+  # RCP8.5
+  BAU_85_time <- es_year_all %>%
+     filter(RCP == "85", Management == "BAU") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_BAU_85_time <- corr.p(BAU_85_time, 36,adjust="bonferroni",alpha=.05)
+
+  BIO_85_time <- es_year_all %>%
+     filter(RCP == "85", Management == "BIO") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_BIO_85_time <- corr.p(BIO_85_time, 36,adjust="bonferroni",alpha=.05)
+
+  CAR_85_time <- es_year_all %>%
+     filter(RCP == "85", Management == "CAR") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_CAR_85_time <- corr.p(CAR_85_time, 36,adjust="bonferroni",alpha=.05)
+
+    ADA_85_time <- es_year_all %>%
+     filter(RCP == "85", Management == "ADA") %>% ungroup() %>%
+     dplyr::select(new_selected_vars) %>%
+     cor(method="pearson")
+  res_ADA_85_time <- corr.p(ADA_85_time, 36,adjust="bonferroni",alpha=.05)
+  
 ```
 
+
+```{r}
+par(mfcol=c(2,2))
+par(mar=c(5.1,4.1,4.1,2.1))
+plot_corr(BAU_45_time, res_BAU_45_time, 0.05 )
+plot_corr(BIO_45_time, res_BIO_45_time, 0.05)
+plot_corr(CAR_45_time, res_CAR_45_time, 0.05)
+plot_corr(ADA_45_time, res_ADA_45_time, 0.05)
+```
+
+```{r}
+par(mfcol=c(2,2))
+par(mar=c(5.1,4.1,4.1,2.1))
+plot_corr(BAU_85_time, res_BAU_85_time, 0.05 )
+plot_corr(BIO_85_time, res_BIO_85_time, 0.05)
+plot_corr(CAR_85_time, res_CAR_85_time, 0.05)
+plot_corr(ADA_85_time, res_ADA_85_time, 0.05)
+```
 
 
 
