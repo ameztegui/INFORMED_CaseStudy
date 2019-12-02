@@ -24,7 +24,7 @@ newtheme <- theme_minimal() +
 load("./data/ZZ_structure_data_from_mushrooms.Rdata")
 
 data <- daso 
-data <- data_plot
+# data <- data_plot
 
 filtered_data <- data %>%
     filter(Management != "ORG", Climate_Model == "CCLM") %>%
@@ -48,8 +48,8 @@ BA_plot <- filtered_data %>%
     facet_grid(RCP ~ Forest_Type) +
     geom_line(size = 1.5) +
     xlim(2002, 2098) +
-    scale_color_manual("Scenario",values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Adaptation")) +
-    scale_fill_manual("Scenario", values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Adaptation")) +    
+    scale_color_manual("Scenario",values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Vulnerability reduction")) +
+    scale_fill_manual("Scenario", values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Vulnerability reduction")) +    
     newtheme 
 
 N_plot <-  filtered_data %>%
@@ -65,8 +65,8 @@ N_plot <-  filtered_data %>%
     facet_grid(RCP ~ Forest_Type) +
     geom_line(size = 1.5) +
     xlim(2002, 2098) +
-    scale_color_manual("Scenario",values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Adaptation")) +
-    scale_fill_manual("Scenario", values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Adaptation")) +    
+    scale_color_manual("Scenario",values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Vulnerability reduction")) +
+    scale_fill_manual("Scenario", values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Vulnerability reduction")) +    
     newtheme
 
 
@@ -84,8 +84,8 @@ DBH_plot <-  filtered_data %>%
     geom_line(size = 1.5) +
     xlim(2002, 2098) +
     scale_y_continuous(breaks = seq(0, 50, by = 10)) +
-    scale_color_manual("Scenario",values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Adaptation")) +
-    scale_fill_manual("Scenario", values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Adaptation")) +    
+    scale_color_manual("Scenario",values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Vulnerability reduction")) +
+    scale_fill_manual("Scenario", values = narrative_colors, labels = c("Business as usual", "Wood energy", "Carbon storage", "Vulnerability reduction")) +    
     newtheme 
 
 
