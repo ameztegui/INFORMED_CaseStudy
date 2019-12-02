@@ -120,7 +120,8 @@ pn_codes = codes[sel_pn]
 
 
 #Save
-save(pn_codes, pn_topo, pn_forestlist, pn_soillist, pn_sp_wgs84, pn_sp_longlat, solsones, cat.contour, comarques, file="Rdata/pn.rdata")
+save(pn_codes, pn_topo, pn_forestlist, pn_soillist, pn_sp_wgs84, pn_sp_longlat, solsones, cat.contour, comarques, 
+     file="Rdata/pn.rdata")
 
 
 #Subset data P. sylvestris
@@ -132,7 +133,8 @@ ps_topo = ifn3_topo[sel_ps,]
 ps_codes = codes[sel_ps]
 
 #Save
-save(ps_codes, ps_topo, ps_forestlist, ps_soillist, ps_sp_wgs84, ps_sp_longlat, solsones, cat.contour, comarques, file="Rdata/ps.rdata")
+save(ps_codes, ps_topo, ps_forestlist, ps_soillist, ps_sp_wgs84, ps_sp_longlat, solsones, cat.contour, comarques, 
+     file="Rdata/ps.rdata")
 
 
 #Subset data Mixed plots
@@ -144,4 +146,5 @@ mx_topo = ifn3_topo[sel_mx,]
 mx_codes = codes[sel_mx]
 
 #Save
-save(mx_codes, mx_topo, mx_forestlist, mx_soillist, mx_sp_wgs84, mx_sp_longlat, solsones, cat.contour, comarques, file="Rdata/mx.rdata")
+save(mx_codes, mx_topo, mx_forestlist, mx_soillist, mx_sp_wgs84, mx_sp_longlat, solsones, cat.contour, comarques, 
+     file="Rdata/mx.rdata")
