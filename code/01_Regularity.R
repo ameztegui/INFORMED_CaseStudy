@@ -6,9 +6,9 @@
 
 rm(list=ls())
 
-load("Rdata/pn.rdata")
-load("Rdata/ps.rdata")
-load("Rdata/mx.rdata")
+load("data/pn.rdata")
+load("data/ps.rdata")
+load("data/mx.rdata")
 
 library(medfate)
 library(tidyverse)
@@ -18,7 +18,7 @@ data("SpParamsMED")
 
       # Average quadratic diameter (Dg)
       averageQuadraticDiameter<-function(x, minDBH = 7.5) {
-            ba<-plant.BasalArea(x)
+            ba<-plant_basalArea(x)
             N<-x$treeData$N
             dbh = x$treeData$DBH
             ba<-ba[1:length(dbh)]
@@ -46,15 +46,15 @@ data("SpParamsMED")
       
       # Basal Area & SDI Reineke
       
-      ba_pn<-unlist(lapply(pn_forestlist,forest.BasalArea))
+      ba_pn<-unlist(lapply(pn_forestlist,forest_basalArea))
       SDI_pn <- (N_pn * (qmd_pn/25)^1.896)
       SDIrel_pn <- SDI_pn/1287
       
-      ba_ps<-unlist(lapply(ps_forestlist,forest.BasalArea))
+      ba_ps<-unlist(lapply(ps_forestlist,forest_basalArea))
       SDI_ps <- (N_ps * (qmd_ps/25)^1.896)
       SDIrel_ps <- SDI_ps/1287
 
-      ba_mx<-unlist(lapply(mx_forestlist,forest.BasalArea))
+      ba_mx<-unlist(lapply(mx_forestlist,forest_basalArea))
       SDI_mx <- (N_mx * (qmd_mx/25)^1.896)
       SDIrel_mx <- SDI_mx/1287
       
@@ -68,7 +68,7 @@ data("SpParamsMED")
 # i es considera irregular o irregularitzada quan la suma de l’AB de dos grups no supera el 80% de l’AB total.
 
       diameterClasses<-function(x, breaks, percentage = TRUE) {
-            ba<-plant.BasalArea(x)
+            ba<-plant_basalArea(x)
             f<-cut(x$treeData$DBH,breaks)
             ba<-ba[1:length(f)]
             a = tapply(ba, f, "sum", na.rm=TRUE)
