@@ -25,6 +25,7 @@ library(medfate)
 library(meteoland)
 library(raster)
 library(patchwork)
+library(psych) # for correlations
 # library(rgeos)
 # library(rgdal)
 # library(maptools)
@@ -80,9 +81,9 @@ The study was conducted in the Solsones county, in the central region of Catalon
 For this study, we decided to evaluate the dynamics of the three main forest types in the area: black pine (*Pinus nigra*) dominates in 19700 hectares; Scots pine (*Pinus sylvestris*) pure stands occupy 10600 hectares, whereas mixed forests of both pines occupy 7950 hectares. Together, these three forest communities account for two thrids of the total forest cover. We defined the initial forest structure and composition of each forest type based on the third Spanish Forest Inventory (IFN3; DGCN, 2005): we selected all the IFN3 plots within Solsonès, and which were dominated by either black pine, Scots pine, or the mixture of both. Based on the relative abundance of each species, we classified the selected 261 plots as pure *Pinus nigra* (146 plots), *Pinus sylvestris* (60 plots) or mixed forest (55 plots).
 
 
-```{r mapa_solsones, eval = FALSE, fig.cap="Figure 1. (a) Location of the Solsones county within Catalonia, and (b) location of the 261 study plots classified according to the dominant species",fig.width = 9,fig.align="center"}
+```{r mapa_solsones, eval = T, fig.cap="Figure 1. (a) Location of the Solsones county within Catalonia, and (b) location of the 261 study plots classified according to the dominant species",fig.width = 9,fig.align="center"}
 
-mdt <- raster("./OtherInputs/SOL_MDT.tif")
+mdt <- raster("./data/carto/SOL_MDT.tif")
 slope <- terrain(mdt, opt='slope')
 aspect <- terrain(mdt, opt='aspect')
 hill <- hillShade(slope, aspect, angle=40, direction=270)
@@ -1100,7 +1101,7 @@ plot_corr(cor_ADA_45_pears, res_ADA_85_pears, 0.05)
 
 This is the correlation between the provision of two ES across time, considering all the studied plots
 
-```{r temporal_correlation, eval = F}
+```{r temporal_correlation, eval = T}
 
 ## First we conduct analysis of spatial correlation, so we calculate, for each timestep, the added value for each ecosystem service
   es_year_all <- es_plot %>%
