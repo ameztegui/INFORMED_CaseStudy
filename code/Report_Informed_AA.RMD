@@ -3,8 +3,8 @@ title: "Report_Informed"
 author: "CTFC"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r "setup", echo =F}
@@ -342,15 +342,18 @@ BA_plot +theme(legend.position = "n") +
 ```
 
 
-The annual evolution of basal area and stem density for each of the studied plots between 2001 and 2100 can be found in these files: 
+The annual evolution of basal area, stem density and DBH for each of the studied plots between 2001 and 2100 can be found in these files: 
 
-* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/BA_dynamics_plots/index.html" target="_blank">Basal Area</a>
-* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/N_dynamics_plots/index.html" target="_blank">Stem density</a>
+* <a href="file:C:/Dades/Activity/INFORMED/reports/BA_per_plot/index.html" target="_blank">Basal Area per plot</a>
+* <a href="file:C:/Dades/Activity/INFORMED/reports/N_per_plot/index.html" target="_blank">Stem density per plot</a>
+* <a href="file:C:/Dades/Activity/INFORMED/reports/DBH_per_plot/index.html" target="_blank">DBH per plot</a>
 
 and their equivalents by plot and species here
 
-* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/BA_dynamics_species_plots/index.html" target="_blank">Basal Area per plot and species</a>
-* <a href="file://///Serverbio/informed/Solsones_CaseStudy/Reports/Trellis/N_dynamics_species_plots/index.html" target="_blank">Stem density per plot and species</a>
+* <a href="file:C:/Dades/Activity/INFORMED/reports/BA_per_plotspecies/index.html" target="_blank">Basal Area per plot and species</a>
+* <a href="file:C:/Dades/Activity/INFORMED/reports/N_per_plotspecies/index.html" target="_blank">Stem density per plot and species</a>
+* <a href="file:C:/Dades/Activity/INFORMED/reports/DBH_per_plotspecies/index.html" target="_blank">DBH per plot and species</a>
+
 
 ## 3.4 Ecosystem services
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.2.1)  2 DEC 2019 10:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.2.1)  3 DEC 2019 16:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -747,7 +747,7 @@ File: Report_Informed_AA_files/figure-latex/timber_volume-1.pdf Graphic file (t
 ype pdf)
 <use Report_Informed_AA_files/figure-latex/timber_volume-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/timber_volume-1.
-pdf  used on input line 387.
+pdf  used on input line 391.
 (pdftex.def)             Requested size: 469.76817pt x 234.88408pt.
 <Report_Informed_AA_files/figure-latex/harvest-1.pdf, id=227, 650.43pt x 325.21
 5pt>
@@ -755,7 +755,7 @@ File: Report_Informed_AA_files/figure-latex/harvest-1.pdf Graphic file (type pd
 f)
 <use Report_Informed_AA_files/figure-latex/harvest-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/harvest-1.pdf  u
-sed on input line 401.
+sed on input line 405.
 (pdftex.def)             Requested size: 469.76817pt x 234.88408pt.
 <Report_Informed_AA_files/figure-latex/allowable cut-1.pdf, id=228, 650.43pt x 
 325.215pt>
@@ -763,25 +763,25 @@ File: Report_Informed_AA_files/figure-latex/allowable cut-1.pdf Graphic file (t
 ype pdf)
 <use Report_Informed_AA_files/figure-latex/allowable cut-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/allowable cut-1.
-pdf  used on input line 422.
+pdf  used on input line 426.
 (pdftex.def)             Requested size: 469.76817pt x 234.88408pt.
-<Report_Informed_AA_files/figure-latex/Carbon-1.pdf, id=229, 650.43pt x 325.215
+[7] [8 <./Report_Informed_AA_files/figure-latex/timber_volume-1.pdf> <./Report_
+Informed_AA_files/figure-latex/harvest-1.pdf>]
+<Report_Informed_AA_files/figure-latex/Carbon-1.pdf, id=260, 650.43pt x 325.215
 pt>
 File: Report_Informed_AA_files/figure-latex/Carbon-1.pdf Graphic file (type pdf
 )
 <use Report_Informed_AA_files/figure-latex/Carbon-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/Carbon-1.pdf  us
-ed on input line 444.
+ed on input line 448.
 (pdftex.def)             Requested size: 469.76817pt x 234.88408pt.
-[7] [8 <./Report_Informed_AA_files/figure-latex/timber_volume-1.pdf> <./Report_
-Informed_AA_files/figure-latex/harvest-1.pdf>]
-<Report_Informed_AA_files/figure-latex/fixed_carbon-1.pdf, id=262, 650.43pt x 3
+<Report_Informed_AA_files/figure-latex/fixed_carbon-1.pdf, id=261, 650.43pt x 3
 25.215pt>
 File: Report_Informed_AA_files/figure-latex/fixed_carbon-1.pdf Graphic file (ty
 pe pdf)
 <use Report_Informed_AA_files/figure-latex/fixed_carbon-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/fixed_carbon-1.p
-df  used on input line 463.
+df  used on input line 467.
 (pdftex.def)             Requested size: 469.76817pt x 234.88408pt.
 [9 <./Report_Informed_AA_files/figure-latex/allowable cut-1.pdf>] [10 <./Report
 _Informed_AA_files/figure-latex/Carbon-1.pdf> <./Report_Informed_AA_files/figur
@@ -792,7 +792,7 @@ File: Report_Informed_AA_files/figure-latex/mushroom_total-1.pdf Graphic file (
 type pdf)
 <use Report_Informed_AA_files/figure-latex/mushroom_total-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/mushroom_total-1
-.pdf  used on input line 505.
+.pdf  used on input line 509.
 (pdftex.def)             Requested size: 469.76817pt x 234.88408pt.
 <Report_Informed_AA_files/figure-latex/deadwood_volume-1.pdf, id=304, 650.43pt 
 x 325.215pt>
@@ -800,48 +800,48 @@ File: Report_Informed_AA_files/figure-latex/deadwood_volume-1.pdf Graphic file
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/deadwood_volume-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/deadwood_volume-
-1.pdf  used on input line 537.
+1.pdf  used on input line 541.
 (pdftex.def)             Requested size: 469.76817pt x 234.88408pt.
 [11 <./Report_Informed_AA_files/figure-latex/mushroom_total-1.pdf>]
-<Report_Informed_AA_files/figure-latex/harvest_period-1.pdf, id=324, 578.16pt x
+<Report_Informed_AA_files/figure-latex/harvest_period-1.pdf, id=323, 578.16pt x
  325.215pt>
 File: Report_Informed_AA_files/figure-latex/harvest_period-1.pdf Graphic file (
 type pdf)
 <use Report_Informed_AA_files/figure-latex/harvest_period-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/harvest_period-1
-.pdf  used on input line 560.
+.pdf  used on input line 564.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
-<Report_Informed_AA_files/figure-latex/carbon_period-1.pdf, id=325, 578.16pt x 
+<Report_Informed_AA_files/figure-latex/carbon_period-1.pdf, id=324, 578.16pt x 
 325.215pt>
 File: Report_Informed_AA_files/figure-latex/carbon_period-1.pdf Graphic file (t
 ype pdf)
 <use Report_Informed_AA_files/figure-latex/carbon_period-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/carbon_period-1.
-pdf  used on input line 571.
+pdf  used on input line 575.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
-<Report_Informed_AA_files/figure-latex/mushroom_period-1.pdf, id=326, 578.16pt 
+<Report_Informed_AA_files/figure-latex/mushroom_period-1.pdf, id=325, 578.16pt 
 x 325.215pt>
 File: Report_Informed_AA_files/figure-latex/mushroom_period-1.pdf Graphic file 
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/mushroom_period-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/mushroom_period-
-1.pdf  used on input line 582.
+1.pdf  used on input line 586.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
-<Report_Informed_AA_files/figure-latex/deadwood_period-1.pdf, id=327, 578.16pt 
+<Report_Informed_AA_files/figure-latex/deadwood_period-1.pdf, id=326, 578.16pt 
 x 325.215pt>
 File: Report_Informed_AA_files/figure-latex/deadwood_period-1.pdf Graphic file 
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/deadwood_period-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/deadwood_period-
-1.pdf  used on input line 597.
+1.pdf  used on input line 601.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
-<Report_Informed_AA_files/figure-latex/unnamed-chunk-3-1.pdf, id=328, 578.16pt 
+<Report_Informed_AA_files/figure-latex/unnamed-chunk-3-1.pdf, id=327, 578.16pt 
 x 325.215pt>
 File: Report_Informed_AA_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file 
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/unnamed-chunk-3-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/unnamed-chunk-3-
-1.pdf  used on input line 611.
+1.pdf  used on input line 615.
 (pdftex.def)             Requested size: 469.75385pt x 264.23653pt.
 [12 <./Report_Informed_AA_files/figure-latex/deadwood_volume-1.pdf>] [13 <./Rep
 ort_Informed_AA_files/figure-latex/harvest_period-1.pdf> <./Report_Informed_AA_
@@ -854,7 +854,7 @@ File: Report_Informed_AA_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/unnamed-chunk-5-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/unnamed-chunk-5-
-1.pdf  used on input line 635.
+1.pdf  used on input line 639.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [15 <./Report_Informed_AA_files/figure-latex/unnamed-chunk-3-1.pdf>]
 <Report_Informed_AA_files/figure-latex/unnamed-chunk-6-1.pdf, id=397, 469.755pt
@@ -863,7 +863,7 @@ File: Report_Informed_AA_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/unnamed-chunk-6-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/unnamed-chunk-6-
-1.pdf  used on input line 637.
+1.pdf  used on input line 641.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [16 <./Report_Informed_AA_files/figure-latex/unnamed-chunk-5-1.pdf>]
 <Report_Informed_AA_files/figure-latex/unnamed-chunk-7-1.pdf, id=409, 469.755pt
@@ -872,7 +872,7 @@ File: Report_Informed_AA_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/unnamed-chunk-7-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/unnamed-chunk-7-
-1.pdf  used on input line 644.
+1.pdf  used on input line 648.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [17 <./Report_Informed_AA_files/figure-latex/unnamed-chunk-6-1.pdf>]
 <Report_Informed_AA_files/figure-latex/unnamed-chunk-8-1.pdf, id=420, 469.755pt
@@ -881,18 +881,18 @@ File: Report_Informed_AA_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file
 (type pdf)
 <use Report_Informed_AA_files/figure-latex/unnamed-chunk-8-1.pdf>
 Package pdftex.def Info: Report_Informed_AA_files/figure-latex/unnamed-chunk-8-
-1.pdf  used on input line 646.
+1.pdf  used on input line 650.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 649.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 653.
 [18 <./Report_Informed_AA_files/figure-latex/unnamed-chunk-7-1.pdf>] [19 <./Rep
 ort_Informed_AA_files/figure-latex/unnamed-chunk-8-1.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 649.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 653.
 (./Report_Informed_AA.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 649.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 649.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 653.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 653.
 Package rerunfilecheck Info: File `Report_Informed_AA.out' has not changed.
 (rerunfilecheck)             Checksum: 335732E0782AB5F4DBD6B8030FEBFB68;6172.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 649.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 653.
  ) 
 Here is how much of TeX's memory you used:
  10402 strings out of 494562
@@ -901,7 +901,7 @@ Here is how much of TeX's memory you used:
  13860 multiletter control sequences out of 15000+600000
  46861 words of font info for 42 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 28i,5n,32p,329b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 28i,5n,32p,329b,456s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/Aitor Ameztegui/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/
 lm/lm-ec.enc}{c:/Users/Aitor Ameztegui/AppData/Roaming/TinyTeX/texmf-dist/fonts
 /enc/dvips/lm/lm-ts1.enc}<c:/Users/Aitor Ameztegui/AppData/Roaming/TinyTeX/texm
@@ -913,7 +913,7 @@ pfb><c:/Users/Aitor Ameztegui/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pu
 blic/lm/lmri10.pfb><c:/Users/Aitor Ameztegui/AppData/Roaming/TinyTeX/texmf-dist
 /fonts/type1/public/lm/lmri12.pfb><c:/Users/Aitor Ameztegui/AppData/Roaming/Tin
 yTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on Report_Informed_AA.pdf (19 pages, 1691485 bytes).
+Output written on Report_Informed_AA.pdf (19 pages, 1691934 bytes).
 PDF statistics:
  490 PDF objects out of 1000 (max. 8388607)
  413 compressed objects within 5 object streams
