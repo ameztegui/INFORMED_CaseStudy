@@ -3,8 +3,8 @@ title: "Report_Informed"
 author: "CTFC"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r "setup", echo =F}
