@@ -5,7 +5,7 @@ library(tidyverse)
 library(purrr)
 library(xml2)
 
-source("./R scripts/2_EntryPoint.R")
+source("./R scripts/02_EntryPoint.R")
 
 # Initial densities -------------------------------------------------------
 
