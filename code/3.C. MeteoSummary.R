@@ -1,8 +1,8 @@
 library(meteoland)
 
-load("Rdata/pn.rdata")
-load("Rdata/ps.rdata")
-load("Rdata/mx.rdata")
+load("data/pn.rdata")
+load("data/ps.rdata")
+load("data/mx.rdata")
 
 sp_wgs84 = SpatialPoints(rbind(pn_sp_wgs84@coords, ps_sp_wgs84@coords, mx_sp_wgs84@coords), pn_sp_wgs84@proj4string)
 
@@ -11,14 +11,13 @@ spt = SpatialPointsTopography(sp_wgs84,
                               slope=c(pn_topo$slope, ps_topo$slope,mx_topo$slope),
                               aspect = c(pn_topo$aspect, ps_topo$aspect,mx_topo$aspect))
 codes = c(pn_codes, ps_codes, mx_codes)
-setwd("../CaseStudy_INFORMED_RARS")
 
 
 ###############
 #    HISTORICAL
 ###############
 
-mp = read.table("InterpolatedMeteoIFN/MP.txt", header=TRUE, sep="\t")
+mp = read.table("data/Climate/InterpolatedMeteoIFN/MP.txt", header=TRUE, sep="\t")
 spdf = SpatialPointsDataFrame(sp_wgs84@coords, mp, proj4string=sp_wgs84@proj4string)
 dates_hist = seq(as.Date("2001-01-01"), as.Date("2005-12-31"), by="day")
 prec_month_hist = summarypoints(spdf, "Precipitation", fun=sum, freq="month", na.rm=TRUE, dates=dates_hist)

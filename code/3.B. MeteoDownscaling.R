@@ -1,8 +1,8 @@
 library(meteoland)
 
-load("Rdata/pn.rdata")
-load("Rdata/ps.rdata")
-load("Rdata/mx.rdata")
+load("data/pn.rdata")
+load("data/ps.rdata")
+load("data/mx.rdata")
 
 sp_wgs84 = SpatialPoints(rbind(pn_sp_wgs84@coords, ps_sp_wgs84@coords, mx_sp_wgs84@coords), pn_sp_wgs84@proj4string)
 
@@ -11,10 +11,10 @@ spt = SpatialPointsTopography(sp_wgs84,
                               slope=c(pn_topo$slope, ps_topo$slope,mx_topo$slope),
                               aspect = c(pn_topo$aspect, ps_topo$aspect,mx_topo$aspect))
 
-setwd("../CaseStudy_INFORMED_RARS")
+
 
 #Read table containing the target coordinates and filenames of observed meteorology
-ObservedMP = read.table("InterpolatedMeteoIFN/MP.txt", sep="\t", header=TRUE)
+ObservedMP = read.table("data/Climate/InterpolatedMeteoIFN/MP.txt", sep="\t", header=TRUE)
 ObsMP = SpatialPointsDataFrame(sp_wgs84, ObservedMP[,c("dir","filename")])
 
 dates = seq(as.Date("2006-01-01"),as.Date("2100-12-31"), by="day")
