@@ -9,6 +9,8 @@ load("./data/pn.rdata")
 load("./data/ps.rdata")
 load("./data/mx.rdata")
 
+all_plots <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01")
+
 BAU_45 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
                      pattern = "45_BAU")
 scA_45 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
@@ -31,10 +33,10 @@ import_data_sortie <- function (sortie_files) {
     path <- "D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01/"
     sortie_path_files <- paste0(path, sortie_files)
     
-    file <- read_delim(sortie_path_files, delim = "\t", skip = 1,
+    file <- read_delim(sortie_path_files, delim = "\t", skip = 1, na = "--",
                        col_types = cols(
                            dead = col_character(),
-                           Diam10 = col_character(),
+                           Diam10 = col_double(),
                            DBH = col_double(),
                            SnagDecayClass = col_character()))
         file$Parcela <- str_sub(sortie_files,10,15)
@@ -86,9 +88,10 @@ raw_data_scD_85 <- suppressWarnings(map_df(scD_85, import_data_sortie))
 # save(raw_data_scD_85, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scD_85.Rdata")
 raw_data_scE_85 <- suppressWarnings(map_df(scE_85, import_data_sortie))
 # save(raw_data_scE_85, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scE_85.Rdata")
-raw_data_scF_85 <-suppressWarnings(map_df(scF_85, import_data_sortie))
+raw_data_scF_85 <- suppressWarnings(map_df(scF_85, import_data_sortie))
 # save(raw_data_scF_85, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scF_85.Rdata")
 
+raw_data_CD_a <-  suppressWarnings(map_df(all_plots, import_data_sortie))
 
  raw_data_CD <- bind_rows(raw_data_BAU_45, raw_data_scA_45, raw_data_scB_45, raw_data_scC_45,
                           raw_data_BAU_85, raw_data_scD_85, raw_data_scE_85, raw_data_scF_85)
