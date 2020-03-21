@@ -36,7 +36,7 @@ pn_plots$Species <- as.factor(pn_plots$Species)
       
     
 # Plot diameter distribution for SORTIE files
-           bind_rows(pn_sortie_A) %>%
+           bind_rows(pn_sortie_scA) %>%
                   mutate(Plot= names(pn_dd)) %>%
                   gather(CD, n, -Plot) %>%
                   arrange(Plot, CD) %>%

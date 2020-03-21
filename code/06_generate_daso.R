@@ -33,6 +33,7 @@ data_plot <- raw_data_CD %>%
     
 save(data_plot, file = "./data/data_plot.Rdata")
 
+
 data_plot_species <- raw_data_CD %>%
     filter(Type == "Adult", `Dead Code` == "Alive") %>%
     group_by(Parcela, Forest_Type, Climate_Model, RCP, 
