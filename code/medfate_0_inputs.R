@@ -6,7 +6,6 @@
 # install_github("miquelcaceres/medfate", ref="devel")
 
 library(medfate)
-# setwd("G:/INFORMED/Solsones_CaseStudy")
 data(SpParamsMED)
 
 load("data/pn.rdata")
@@ -33,7 +32,7 @@ buildPlotForestList_PS<-function(data, id) {
   return(forest_list)
 }
 
-buildPlotForestList_PN<-function(data, id) {
+buildPlotForestList_PN <- function(data, id) {
   dataplot = data[data$Parcela == id, ]
   forest_list = vector("list", 100)
   for(i in 1:100) {

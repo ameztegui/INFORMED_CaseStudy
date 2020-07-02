@@ -511,14 +511,12 @@ carbon_species %>%
 
 ```{r}
 
-load("./data/ES_data/MushroomYieldPred5_withnewdataandmixedmodels.Rdata")
-
-mushroom_plot <- bind_rows(mushrooms_CCLM_45, mushrooms_CCLM_85) %>%
-  mutate(Mushroom = Yield)
+load(here("data/ES_data/mushroom_plot.Rdata"))
 
   
 mushroom_species <- mushroom_plot %>%
-    filter(Management != "ORG") %>%
+    filter(Management != "ORG",
+           Climate_Model == "CCLM") %>%
     # mutate(Management = factor(Management)) %>%
     mutate(Year = Timestep + 2001) %>%
     group_by (Recipe, Climate_Model, RCP, Management, Narrative, Year, Forest_Type) %>%

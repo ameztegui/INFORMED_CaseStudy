@@ -26,7 +26,7 @@ IFN_soilgrids_params_mod = readRDS("data/IFN3_soilgrids_params.rds")
 soil_list_params = IFN_soilgrids_params_mod[codes]
 
 #Load SORTIE OUTPUT
-load(paste0("data/data_CD.Rdata"))
+load("data/data_CD.Rdata")
 
 
 simScenario<-function(datascen, codes, scendir, outfile) {
@@ -107,7 +107,7 @@ for(climmod in c("CCLM4-8-17","RCA4")) {
         cat(paste0("\n\nRunning scenario: ", scen,":\n"))
         #Select sortie data corresponding to scenario
         datascen = data_CD[(data_CD$RCP==climdata) & (data_CD$Climate_Model == modeldata) & (data_CD$Narrative == narrativedata),]
-        simScenario(datascen, codes, scendir, paste0("Rdata/SWBOutput/SWB_",scen,".Rdata"))
+        simScenario(datascen, codes, scendir, paste0("data/SWBOutput/SWB_",scen,".Rdata"))
       }
     }
   }
