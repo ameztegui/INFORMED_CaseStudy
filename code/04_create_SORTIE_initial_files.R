@@ -5,12 +5,17 @@ library(tidyverse)
 library(purrr)
 library(xml2)
 
-source("./R scripts/02_EntryPoint.R")
+source("./code/02_EntryPoint.R")
+load("data/sortie_plots.Rdata")
+
+load("data/pn.rdata")
+load("data/ps.rdata")
+load("data/mx.rdata")
 
 # Initial densities -------------------------------------------------------
 
 # This function takes the diameter distribution of each plot and parses it into a text string, so that it can be 
-# inserted into the xml file
+# later inserted into the xml file
 # The arguments are a dataframe, and the name of the species
 
 define_densities <- function (df, species)  {
@@ -31,21 +36,28 @@ define_densities <- function (df, species)  {
             
       closing <- '</tr_idVals></tr_initialDensities>'
       
-      dens_numbers <- as.numeric(df[1,])
+      dens_numbers <- as.character(df[1,])
       dens_string <- str_replace_all(dens0,'0',dens_numbers)
       dens_char <- paste(dens_string, sep="", collapse="") 
       complete_char <- paste0(opening, dens_char, closing,collapse ="" )
 }
 
+
+
 pn_xml_dd_A <- map(pn_sortie_A, define_densities, "PINI")
 pn_xml_dd_B <- map(pn_sortie_B, define_densities, "PINI")
 pn_xml_dd_C <- map(pn_sortie_C, define_densities, "PINI")
 pn_xml_dd_D <- map(pn_sortie_D, define_densities, "PINI")
+pn_xml_dd_E <- map(pn_sortie_E, define_densities, "PINI")
+pn_xml_dd_F <- map(pn_sortie_F, define_densities, "PINI")
 
 ps_xml_dd_A <- map(ps_sortie_A, define_densities, "PISY")
 ps_xml_dd_B <- map(ps_sortie_B, define_densities, "PISY")
 ps_xml_dd_C <- map(ps_sortie_C, define_densities, "PISY")
 ps_xml_dd_D <- map(ps_sortie_D, define_densities, "PISY")
+ps_xml_dd_E <- map(ps_sortie_E, define_densities, "PISY")
+ps_xml_dd_F <- map(ps_sortie_F, define_densities, "PISY")
+
 
 densities_A <- c(pn_xml_dd_A, ps_xml_dd_A)
 densities_A <- densities_A[order(names(densities_A))]
@@ -62,9 +74,9 @@ densities_D <- densities_D[order(names(densities_D))]
 
 # Latitude
 pn_sp_latitude <- as.list(as.character(pn_sp_longlat@coords[,2]))
-names(pn_sp_latitude) <- names(pn_dd)
+names(pn_sp_latitude) <- names(pn_forestlist)
 ps_sp_latitude <- as.list(as.character(ps_sp_longlat@coords[,2]))
-names(ps_sp_latitude) <- names(ps_dd)
+names(ps_sp_latitude) <- names(ps_forestlist)
 
 latitude <- c(pn_sp_latitude, ps_sp_latitude )
 latitude <- latitude[order(names(latitude))]
@@ -74,28 +86,28 @@ latitude <- latitude[order(names(latitude))]
 
 # In this case, we read the harvest regimes from external files, and we store them as objects
 
-pn_harvest_A <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_A",full.names = T) %>%
+pn_harvest_A <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_scA",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
-pn_harvest_B <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_B",full.names = T) %>%
+pn_harvest_B <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_scB",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
-pn_harvest_C <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_C",full.names = T) %>%
+pn_harvest_C <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_scC",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
-pn_harvest_D <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_D",full.names = T) %>%
+pn_harvest_D <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="pn_scD",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
-ps_harvest_A <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_A",full.names = T) %>%
+ps_harvest_A <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_scA",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
-ps_harvest_B <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_B",full.names = T) %>%
+ps_harvest_B <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_scB",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
-ps_harvest_C <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_C",full.names = T) %>%
+ps_harvest_C <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_scC",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
-ps_harvest_D <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_D",full.names = T) %>%
+ps_harvest_D <- list.files(path="./SORTIE_files/Harvest_Regimes/",  pattern="ps_scD",full.names = T) %>%
       set_names(.,basename(.)) %>%  map(read_xml)
 
 
@@ -137,7 +149,13 @@ harvest_D <- harvest_D[order(names(harvest_D))]
 
 # Climate files -----------------------------------------------------------
 
-load("./Rdata/climatic_data.Rdata")
+load("./data/climatic_data.Rdata")
+
+CCLM_4.5 <- mapply(list, temp=temp_CCLM_4.5, prec=prec_RCA4_4.5, SIMPLIFY = FALSE)
+CCLM_8.5 <- mapply(list, temp=temp_CCLM_8.5, prec=prec_RCA4_8.5, SIMPLIFY = FALSE)
+RCA4_4.5 <- mapply(list, temp=temp_RCA4_4.5, prec=prec_RCA4_4.5, SIMPLIFY = FALSE)
+RCA4_8.5 <- mapply(list, temp=temp_RCA4_8.5, prec=prec_RCA4_8.5, SIMPLIFY = FALSE)
+
 
 climate_scenarios <- function(df) {
       
@@ -344,7 +362,7 @@ parse_xml <- function (narrative, narrative_name, climate, climate_name, names) 
       harvest <- narrative$harvest
       
       
-      y <- read_xml("./SORTIE_files/Informed_piloto.xml")
+      y <- read_xml("./SORTIE_files/XML_Inputs/Piloto/Informed_piloto.xml")
       
       
       ## Name a series of nodes that we want to substitute
@@ -361,16 +379,16 @@ parse_xml <- function (narrative, narrative_name, climate, climate_name, names) 
                   sortie_initialDensities <- xml_children(sortie_trees)[[3]]
             
             ## Harvest
-            sortie_harvest <- xml_children(y)[[8]]
+            sortie_harvest <- xml_children(y)[[5]]
             
             ## Climate Importer
-            sortie_climate <-xml_children(y)[[9]]
+            sortie_climate <-xml_children(y)[[6]]
             
             ## Output
-            sortie_output <- xml_children(y)[[21]]
+            sortie_output <- xml_children(y)[[18]]
                   sortie_output_name <- xml_children(sortie_output)[[1]]
                   
-            sortie_short_output <- xml_children(y)[[22]]
+            sortie_short_output <- xml_children(y)[[19]]
                   sortie_short_output_name <- xml_children(sortie_short_output)[[1]]
       
       ## Replace each node in the xml file by the object created previously
