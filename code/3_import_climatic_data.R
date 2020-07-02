@@ -56,4 +56,5 @@ RCA4_8.5 <- mapply(list, temp=temp_RCA4_8.5, prec=prec_RCA4_8.5, SIMPLIFY = FALS
 
 save (CCLM_4.5,CCLM_8.5,
       RCA4_4.5, RCA4_8.5,
-      file="./Rdata/climatic_data.Rdata")
+      file="./data/climatic_data.Rdata")
+
