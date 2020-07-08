@@ -9,14 +9,12 @@ load("./data/pn.rdata")
 load("./data/ps.rdata")
 load("./data/mx.rdata")
 
-all_plots <- list.files("./SORTIE_files/Results/TreeMaps/", full.names = T)
+all_plots <- list.files("Y:/INFORMED/SORTIE_files/Results/TreeMaps/", pattern = "*.txt", full.names = T ) # stored in the lab's NAS
 
-
-import_data_sortie <- function (sortie_files) {
-    # path <- "C:/Dades/Activity/INFORMED/SORTIE_files/Results/TreeMaps/"
-    # sortie_path_files <- paste0(path, sortie_files)
+import_data_sortie <- function (sortie_path_files) {
+    sortie_files <- basename(sortie_path_files)
     
-    file <- read_delim(sortie_files, delim = "\t", skip = 1, na = "--",
+    file <- read_delim(sortie_path_files, delim = "\t", skip = 1, na = "--",
                        col_types = cols(
                            dead = col_character(),
                            Diam10 = col_double(),
@@ -61,49 +59,4 @@ raw_data_CD <-  suppressWarnings(map_df(all_plots, import_data_sortie))
 
 
  save(raw_data_CD, file = "./data/raw_data_CD.Rdata")
- 
- 
-
-# Deprectaed: by type of management ---------------------------------------
-
- 
- # BAU_45 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "45_BAU")
- # scA_45 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "45_scA")
- # scB_45 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "45_scB")
- # scC_45 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "45_scC")
- # BAU_85 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "85_BAU")
- # scD_85 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "85_scD")
- # scE_85 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "85_scE")
- # scF_85 <- list.files("D:/Aitor/INFORMED_CaseStudy/SORTIE_files/Results/TreeMaps/Rep01",
- #                      pattern = "85_scF")
- # 
- # 
- # 
- # 
- # raw_data_BAU_45 <- suppressWarnings(map_df(BAU_45, import_data_sortie))
- # # save(raw_data_BAU_45, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_BAU_45.Rdata")
- # raw_data_scA_45 <- suppressWarnings(map_df(scA_45, import_data_sortie)) 
- # # save(raw_data_scA_45, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scA_45.Rdata")
- # raw_data_scB_45 <- suppressWarnings(map_df(scB_45, import_data_sortie)) 
- # # save(raw_data_scB_45, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scB_45.Rdata")
- # raw_data_scC_45 <- suppressWarnings(map_df(scC_45, import_data_sortie))
- # # save(raw_data_scC_45, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scC_45.Rdata")
- # raw_data_BAU_85 <- suppressWarnings(map_df(BAU_85, import_data_sortie)) 
- # # save(raw_data_BAU_85, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_BAU_85.Rdata")
- # raw_data_scD_85 <- suppressWarnings(map_df(scD_85, import_data_sortie))
- # # save(raw_data_scD_85, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scD_85.Rdata")
- # raw_data_scE_85 <- suppressWarnings(map_df(scE_85, import_data_sortie))
- # # save(raw_data_scE_85, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scE_85.Rdata")
- # raw_data_scF_85 <- suppressWarnings(map_df(scF_85, import_data_sortie))
- # # save(raw_data_scF_85, file = "D:/Aitor/INFORMED_CaseStudy/data/raw_data_scF_85.Rdata") 
- # 
- # raw_data_CD <- bind_rows(raw_data_BAU_45, raw_data_scA_45, raw_data_scB_45, raw_data_scC_45,
- #                          raw_data_BAU_85, raw_data_scD_85, raw_data_scE_85, raw_data_scF_85)
  
