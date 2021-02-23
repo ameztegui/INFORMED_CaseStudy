@@ -558,6 +558,8 @@ Blue water is the water exported via runoff or drainage to saturated layers, (i.
 
 ```{r blue water, warning=F, fig.cap = "Figure 10. Dynamics of blue water as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE, eval = FALSE}
 
+load("./data/bw_species.Rdata")
+
 bw_species %>% 
     ggplot(aes(Year,zoo::rollmean(BW_mean,4,na.pad=T),
                  color=Management)) +
@@ -623,19 +625,20 @@ This is calculated using the USLE equations
 
 ```{r ER, warning=F, fig.cap = "Figure 12. Dynamics of erosion prevention service provided by forests as a function of climatic and management scenarios", fig.width = 9, fig.align = "center", warning=FALSE, eval = FALSE}
 
+load("./data/er_plot.Rdata")
 
 er_species %>% 
   ggplot(aes(Year,ER_mean, color = Management)) +
   geom_ribbon(aes(ymin = ER_mean - ER_sd,
                   ymax = ER_mean + ER_sd,
-                  fill = Narrative),
+                  fill = Management),
               alpha = 0.4, color=NA) +
   geom_line( size=1.45) +
   scale_color_manual(values = management_colors) +
   scale_fill_manual(values = management_colors) +
   theme_bw() +
-  labs(x = "Year", y = "Erosion prevention service") +
-  facet_grid( RCP ~ Scenario)
+  labs(x = "Year", y = "Erosion prevention service (ratio)") +
+  facet_grid( RCP ~ Forest_Type)
 ```
 
 <!-- #### Erosion prevention service (relative to BAU) -->
