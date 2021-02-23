@@ -8,10 +8,10 @@ load("./data/raw_data_CD.Rdata")
 
 # Annual Dasometry by plot, scenario, species and CD class ----
    
-    data_CD <- raw_data_CD %>%
+    adult_data_CD <- raw_data_CD %>%
         filter(Type == "Adult", `Dead Code` == "Alive") 
 
-    save(data_CD, file = "./data/data_CD.Rdata")
+    save(adult_data_CD, file = "./data/adult_data_CD.Rdata")
 
 
 # Annual Dasometry by plot and scenario ----
