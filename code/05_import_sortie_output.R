@@ -30,6 +30,7 @@ import_data_sortie <- function (sortie_path_files) {
         file %>%
             filter(Type != "Seedling", dead != "2") %>%
             mutate(Year = Timestep + 2001,
+                   Crown_diam = if_else()
                    Forest_Type = if_else(Parcela %in% names(pn_forestlist), "Pinus nigra",
                                          if_else(Parcela %in% names(ps_forestlist), "Pinus sylvestris",
                                                  if_else(Parcela %in% names(mx_forestlist), "Mixed forest", ""))),
