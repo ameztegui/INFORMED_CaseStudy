@@ -34,7 +34,10 @@ library(here)
 
       # Load IFN data and select those from Solsonès
       load(here("data/IFN3_exist_SpatialForestPoints.Rdata"))
+      foo <- readRDS(here("data/forestlist_roots_IFN3_Catalunya.rds"))
       solsones_forestlist <- y_ifn3_exist@forestlist[codes]
+      solsones_forestlist2 <- foo[codes]
+      
       solsones_soillist <- y_ifn3_exist@soillist[codes]
 
       
@@ -124,35 +127,38 @@ sum(sel_mx)
 
 # Subset data P. nigra
 pn_forestlist = solsones_forestlist[sel_pn]
+pn_forestlist2 = solsones_forestlist2[sel_pn]
 pn_sp_wgs84 = ifn3_sp_wgs84[sel_pn,]
 pn_sp_longlat = ifn3_sp_longlat[sel_pn,]
 pn_soillist = solsones_soillist[sel_pn]
 pn_topo = ifn3_topo[sel_pn,]
 pn_codes = codes[sel_pn]
 
-save(pn_codes, pn_topo, pn_forestlist, pn_soillist, pn_sp_wgs84, pn_sp_longlat, solsones, 
+save(pn_codes, pn_topo, pn_forestlist, pn_forestlist2, pn_soillist, pn_sp_wgs84, pn_sp_longlat, solsones, 
      file="data/pn.rdata")
 
 
 # Subset data P. sylvestris
 ps_forestlist = solsones_forestlist[sel_ps]
+ps_forestlist2 = solsones_forestlist2[sel_ps]
 ps_sp_wgs84 = ifn3_sp_wgs84[sel_ps,]
 ps_sp_longlat = ifn3_sp_longlat[sel_ps,]
 ps_soillist = solsones_soillist[sel_ps]
 ps_topo = ifn3_topo[sel_ps,]
 ps_codes = codes[sel_ps]
 
-save(ps_codes, ps_topo, ps_forestlist, ps_soillist, ps_sp_wgs84, ps_sp_longlat, solsones,  
+save(ps_codes, ps_topo, ps_forestlist, ps_forestlist2, ps_soillist, ps_sp_wgs84, ps_sp_longlat, solsones,  
      file="data/ps.rdata")
 
 
 # Subset data Mixed plots
 mx_forestlist = solsones_forestlist[sel_mx]
+mx_forestlist2 = solsones_forestlist2[sel_mx]
 mx_sp_wgs84 = ifn3_sp_wgs84[sel_mx,]
 mx_sp_longlat = ifn3_sp_longlat[sel_mx,]
 mx_soillist = solsones_soillist[sel_mx]
 mx_topo = ifn3_topo[sel_mx,]
 mx_codes = codes[sel_mx]
 
-save(mx_codes, mx_topo, mx_forestlist, mx_soillist, mx_sp_wgs84, mx_sp_longlat, solsones, 
+save(mx_codes, mx_topo, mx_forestlist, mx_forestlist2, mx_soillist, mx_sp_wgs84, mx_sp_longlat, solsones, 
      file="data/mx.rdata")
